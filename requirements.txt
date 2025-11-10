@@ -6,5 +6,7 @@ numpy
 
 plantcv
 
+ipython
+
 flake8
 
