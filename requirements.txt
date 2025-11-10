@@ -1,0 +1,10 @@
+pandas
+
+matplotlib
+
+numpy
+
+plantcv
+
+flake8
+
