@@ -1,3 +1,4 @@
+import torch
 import torch.optim as optim
 import torch.nn.functional as F
 import numpy as np
@@ -33,6 +34,7 @@ def validation(model, val_loader, device):
 			output = model(img)
 			pred = output.argmax(dim=1, keepdim=True)
 			correct_count += pred.eq(label.view_as(pred)).sum().item()
+			loss_val += F.cross_entropy(output, label.squeeze())
 	loss_val /= len(val_loader)
 	correct_rate = correct_count / len(val_loader.dataset)
 	return loss_val, correct_rate
@@ -54,18 +56,14 @@ def test(model, test_loader, device):
 	return prediction_arr
 	
 
-def train_model(model, datas, device, lr=0.00005):
+def train_model(model, datas, device):
 	X_train, X_val, y_train, y_val = datas
 	train_loader, val_loader = load_datas(X_train, X_val, y_train, y_val)
-	optimizer = optim.Adam(model.parameters(), lr=0.00005)
+	optimizer = optim.Adam(model.parameters(), lr=0.0001)
 	loss_epoch = None
 	counter = 0
 	print("[Training started]")
 
-	# loss_train = []
-	# loss_val = []
-	# acc_train = []
-	# acc_val = []
 	records = [[], [], [], []]
 	for epoch in range(40):
 		new_val_loss, acc_val = validation(model, val_loader, device)
@@ -78,15 +76,14 @@ def train_model(model, datas, device, lr=0.00005):
 		if counter >= 3:
 			print("[Early stopped.]")
 			break
-
 		record = [new_train_loss, new_val_loss, acc_train, acc_val]
 		print(f"[Epoch]: {epoch}  [Train Loss]: {record[0]:.4f}  [Train Acc]: ({(record[2] * 100):.0f}%)  [Val Loss]: {record[1]:.4f}  [Val Acc]: ({(record[3] * 100):.0f}%)")
 		append_records(records, record)
 		loss_epoch = new_train_loss
-		print("[Training done.]")
-		save_model(model, "weights.pth")
-		show_records(records)
-		return model
+	print("[Training done.]")
+	save_model(model, "weights.pth")
+	show_records(records)
+	return model
 
 
 def append_records(records, record):
