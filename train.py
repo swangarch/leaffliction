@@ -15,11 +15,6 @@ from srcs.train_utils import *
 #     show_train_datas(train_df)
 
 
-# def cnn_train(model, data, device):
-#     train_df, datas = read_train_datas(data)
-#     train_model(model, datas, device)
-
-
 # def cnn_predict(model, testdata, device):
 #     test_df, X_test = read_test_datas(testdata)
 #     new_test_loader = load_test_datas(X_test)
@@ -32,21 +27,23 @@ from srcs.train_utils import *
 
 
 def main():
-    # try:
+    try:
+        if len(sys.argv) != 2:
+            raise TypeError("Wrong argument number.")
+        
         model = CNN()
-        # try:
-        device = use_device()
-        model.to(device)
-        in_arr, out_arr = load_image()
-        datas = split_datas(in_arr, out_arr)
-        train_model(model, datas, device)
+        try:
+            device = use_device()
+            model.to(device)
+            dataloaders = create_dataloader(sys.argv[1], 64)
+            train_model(model, dataloaders, device)
 
-    #     except KeyboardInterrupt:
-    #         save_model(model, "weights.pth")
-    #         print("Stopped by user, weights saved => (weights.pth)")
+        except KeyboardInterrupt:
+            save_model(model, "weights.pth")
+            print("Stopped by user, weights saved => (weights.pth)")
 
-    # except Exception as e:
-    #     print("Error:", e)
+    except Exception as e:
+        print("Error:", e)
 
 
 if __name__ == "__main__":
