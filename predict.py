@@ -1,11 +1,8 @@
 #!/usr/bin/python3
+
 import torch
-from srcs.model import *
-from srcs.model import *
 import sys
-from srcs.data_loader import *
-from srcs.train_utils import *
-from PIL import Image
+from srcs import *
 
 
 def main():
@@ -19,8 +16,20 @@ def main():
             model.to(device)
             if len(sys.argv) == 3:
                 model.load_state_dict(torch.load(sys.argv[2], map_location=device))
-            dataloaders = test_dataloader(sys.argv[1], 64)
-            test(model, dataloaders, device)
+            
+            path = sys.argv[1]
+            if os.path.isdir(path):
+                dataloaders = batch_test_dataloader(sys.argv[1])
+                pred = test(model, dataloaders, device)
+                pred_arr =  np.array(pred).reshape(-1, 1)
+                np.savetxt("prediction.csv", pred_arr, fmt="%s", delimiter=";")
+                print("[Predcitons are saved => (predictions.csv)]")
+            else:
+                dataloaders = img_test_dataloader(sys.argv[1])
+                pred = test(model, dataloaders, device)
+                img1 = plt.imread(path)
+                img2 = img_detect_leaf(img1)
+                show_image(img1, img2, pred[0])
 
         except KeyboardInterrupt:
             pass

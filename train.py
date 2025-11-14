@@ -1,29 +1,8 @@
 #!/usr/bin/python3
 
-
 import torch
-from srcs.model import *
-from srcs.model import *
 import sys
-from srcs.data_loader import *
-from srcs.train_utils import *
-
-
-
-# def visu(data):
-#     train_df, datas = read_train_datas(data)
-#     show_train_datas(train_df)
-
-
-# def cnn_predict(model, testdata, device):
-#     test_df, X_test = read_test_datas(testdata)
-#     new_test_loader = load_test_datas(X_test)
-#     predictions = test(model, new_test_loader, device)
-#     show_result(test_df, predictions)
-
-
-# def cnn_load_weights(model, weights, device):
-#     model.load_state_dict(torch.load(weights, map_location=device))
+from srcs import *
 
 
 def main():
