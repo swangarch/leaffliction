@@ -1,35 +1,46 @@
 #!/usr/bin/python3
 
-import torch
-import sys
 from srcs import *
+import argparse
+
+
+def parse_arg():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("path")
+    parser.add_argument("--model", "-m", type=str, default="CNN")
+    parser.add_argument("--loadweights", "-l", type=str)
+    parser.add_argument("--prediction", "-p", type=str, default="predictions.csv")
+    args = parser.parse_args()
+    return args
+
+
+def predict_indir(args, model, device):
+    dataloaders = batch_test_dataloader(args.path)
+    pred = test(model, dataloaders, device)
+    pred_arr =  np.array(pred).reshape(-1, 1)
+    np.savetxt(args.prediction, pred_arr, fmt="%s", delimiter=";")
+    print(f"[Predcitons are saved => ({args.prediction})]")
+
+
+def predict_single(args, model, device):
+    dataloaders = img_test_dataloader(args.path)
+    pred = test(model, dataloaders, device)
+    img1 = plt.imread(args.path)
+    img2 = img_detect_leaf(img1)
+    show_image(img1, img2, pred[0])
 
 
 def main():
     try:
-        if len(sys.argv) != 3 and len(sys.argv) != 2:
-            raise TypeError("Wrong argument number.")
-        
-        model = CNN()
+        args = parse_arg()
+        model = select_model(args.model)
         try:
-            device = use_device()
-            model.to(device)
-            if len(sys.argv) == 3:
-                model.load_state_dict(torch.load(sys.argv[2], map_location=device))
-            
-            path = sys.argv[1]
-            if os.path.isdir(path):
-                dataloaders = batch_test_dataloader(sys.argv[1])
-                pred = test(model, dataloaders, device)
-                pred_arr =  np.array(pred).reshape(-1, 1)
-                np.savetxt("prediction.csv", pred_arr, fmt="%s", delimiter=";")
-                print("[Predcitons are saved => (predictions.csv)]")
+            device = use_device(model)
+            load_weights(model, args.loadweights, device)
+            if os.path.isdir(args.path):
+                predict_indir(args, model, device)
             else:
-                dataloaders = img_test_dataloader(sys.argv[1])
-                pred = test(model, dataloaders, device)
-                img1 = plt.imread(path)
-                img2 = img_detect_leaf(img1)
-                show_image(img1, img2, pred[0])
+                predict_single(args, model, device)
 
         except KeyboardInterrupt:
             pass

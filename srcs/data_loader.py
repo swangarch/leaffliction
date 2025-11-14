@@ -8,7 +8,7 @@ import os
 from PIL import Image
 
 
-def create_dataloader(path:str="./leaves/images/", batch_size:int=64, train_ratio:float=0.8) -> None:
+def create_dataloader(path:str, batch_size:int=64, train_ratio:float=0.8) -> None:
 	img_transform = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize(
@@ -28,7 +28,7 @@ def create_dataloader(path:str="./leaves/images/", batch_size:int=64, train_rati
 	return train_loader, val_loader
 
 
-def batch_test_dataloader(path:str="./leaves/images/", batch_size:int=64, train_ratio:float=0.8) -> None:
+def batch_test_dataloader(path:str, batch_size:int=64, train_ratio:float=0.8) -> None:
 	img_transform = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize(
@@ -43,7 +43,7 @@ def batch_test_dataloader(path:str="./leaves/images/", batch_size:int=64, train_
 	return test_loader
 
 
-def img_test_dataloader(path:str="./images/1.png", batch_size=64, train_ratio:float=0):
+def img_test_dataloader(path:str, batch_size=64, train_ratio:float=0):
 	img_transform = transforms.Compose([
 		transforms.ToTensor(),
 		transforms.Normalize(

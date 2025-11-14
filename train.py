@@ -1,31 +1,19 @@
 #!/usr/bin/python3
 
-import torch
-import sys
 from srcs import *
 import argparse
 
 
 def parse_arg():
     parser = argparse.ArgumentParser()
-    parser.add_argument("imgdir")
+    parser.add_argument("path")
     parser.add_argument("--model", "-m", type=str, default="CNN")
-    parser.add_argument("--weights", "-w", type=str, default="weights.pth")
-    parser.add_argument("--saveweights", "-s", type=str, default="weights_out.pth")
+    parser.add_argument("--loadweights", "-l", type=str)
+    parser.add_argument("--saveweights", "-s", type=str, default="weights.pth")
+    parser.add_argument("--learningrate", "-lr", type=float, default=0.001)
+    parser.add_argument("--batchsize", "-bs", type=int, default=64)
     args = parser.parse_args()
     return args
-
-
-def select_model(name):
-    if name == "RESNET":
-        print("[Using Resnet]")
-        model = RESNET()
-    elif name == "CNN":
-        print("[Using CNN]")
-        model = CNN()
-    else:
-        raise TypeError("Unsupported model.")
-    return model
 
 
 def main():
@@ -33,15 +21,14 @@ def main():
         args = parse_arg()
         model = select_model(args.model)
         try:
-            device = use_device()
-            model.to(device)
-            dataloaders = create_dataloader(sys.argv[1], 64)
-            train_model(model, dataloaders, device, args.saveweights)
+            device = use_device(model)
+            load_weights(model, args.loadweights, device)
+            dataloaders = create_dataloader(args.path, args.batchsize)
+            train_model(model, dataloaders, device, lr=args.learningrate)
 
         except KeyboardInterrupt:
-            savepath = args.saveweights
-            save_model(model, savepath)
-            print(f"Stopped by user, weights saved => ({savepath})")
+            pass
+        save_model(model, args.saveweights)
 
     except Exception as e:
         print("Error:", e)

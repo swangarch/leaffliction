@@ -37,7 +37,6 @@ class CNN(nn.Module):
             return x
 
 
-
 class ResidualBlock(nn.Module):
     def  __init__(self, in_channels, out_channels, downsample=False):
         super().__init__()

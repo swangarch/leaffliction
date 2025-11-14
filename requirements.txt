@@ -10,6 +10,8 @@ ipython
 
 flake8
 
-# torch
+altair>=5,<6
 
-# torchvision
+torch
+
+torchvision
