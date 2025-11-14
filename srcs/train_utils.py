@@ -69,7 +69,7 @@ def is_early_stopped(loss_epoch, new_train_loss, counter):
 	return counter, False
 
 
-def train_model(model, dataloaders ,device):
+def train_model(model, dataloaders ,device, savepath):
 	train_loader, val_loader = dataloaders
 	optimizer = optim.Adam(model.parameters(), lr=0.001)
 	loss_epoch = None
@@ -79,56 +79,19 @@ def train_model(model, dataloaders ,device):
 	for epoch in range(20):
 		new_val_loss, acc_val = validation(model, val_loader, device)
 		new_train_loss, acc_train = training(model, train_loader, optimizer, device)
-		#------------------early stopping---------------
+
 		counter, early_stop = is_early_stopped(loss_epoch, new_train_loss, counter)
 		if early_stop == True:
 			break
-		# if loss_epoch is not None and abs(new_train_loss - loss_epoch) < 0.001:
-		# 	counter += 1
-		# else:
-		# 	counter = 0
-		# if counter >= 3:
-		# 	print("[Early stopped.]")
-		# 	break
-		#------------------early stopping---------------
+
 		record = [new_train_loss, new_val_loss, acc_train, acc_val]
 		print(f"[Epoch] {epoch}  [Train Loss] {record[0]:.4f}  [Train Acc] ({(record[2] * 100):.0f}%)  [Val Loss] {record[1]:.4f}  [Val Acc]: ({(record[3] * 100):.0f}%)")
 		append_records(records, record)
 		loss_epoch = new_train_loss
 	print("[Training done.]")
-	save_model(model, "weights.pth")
+	save_model(model, savepath)
 	show_records(records)
 	return model
-
-
-
-# def train_model(model, dataloaders ,device):
-# 	train_loader, val_loader = dataloaders
-# 	optimizer = optim.Adam(model.parameters(), lr=0.001)
-# 	loss_epoch = None
-# 	counter = 0
-# 	print("[Training started]")
-# 	records = [[], [], [], []]
-# 	for epoch in range(20):
-# 		new_val_loss, acc_val = validation(model, val_loader, device)
-# 		new_train_loss, acc_train = training(model, train_loader, optimizer, device)
-# 		#------------------early stopping---------------
-# 		if loss_epoch is not None and abs(new_train_loss - loss_epoch) < 0.001:
-# 			counter += 1
-# 		else:
-# 			counter = 0
-# 		if counter >= 3:
-# 			print("[Early stopped.]")
-# 			break
-# 		#------------------early stopping---------------
-# 		record = [new_train_loss, new_val_loss, acc_train, acc_val]
-# 		print(f"[Epoch] {epoch}  [Train Loss] {record[0]:.4f}  [Train Acc] ({(record[2] * 100):.0f}%)  [Val Loss] {record[1]:.4f}  [Val Acc]: ({(record[3] * 100):.0f}%)")
-# 		append_records(records, record)
-# 		loss_epoch = new_train_loss
-# 	print("[Training done.]")
-# 	save_model(model, "weights.pth")
-# 	show_records(records)
-# 	return model
 
 
 def append_records(records, record):
