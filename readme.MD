@@ -1,3 +1,5 @@
+![Leaffliction](./visualize/Leaffliction.jpg)
+
 # Leaffliction
 
 **Leaffliction** is a computer vision project designed to detect plant leaf diseases for applications in **precision agriculture**.
