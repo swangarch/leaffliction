@@ -2,6 +2,7 @@
 
 from srcs import *
 import argparse
+import csv
 
 
 def parse_arg():
@@ -14,20 +15,37 @@ def parse_arg():
     return args
 
 
+def save_prediction(args, filenames, pred_literals):
+    with open(args.prediction, 'w', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f)
+        writer.writerow(["path", "prediction"])
+        for name, pred in zip(filenames, pred_literals):
+            writer.writerow([name, pred])
+
+
 def predict_indir(args, model, device):
-    dataloaders = batch_test_dataloader(args.path)
+    dataloaders, dataset = batch_test_dataloader(args.path)
     pred = test(model, dataloaders, device)
-    pred_arr =  np.array(pred).reshape(-1, 1)
-    np.savetxt(args.prediction, pred_arr, fmt="%s", delimiter=";")
+    count = 0
+    pred_literals = []
+    filenames = []
+    for i, p in enumerate(pred):
+        if p == dataset.samples[i][1]:
+            count += 1
+        pred_literals.append(dataset.classes[p])
+        filenames.append(dataset.samples[i][0])
+    print(f"[Correct rate => ({100 * count / len(pred):.2f}%)  {count}/{len(pred)}]")
+    save_prediction(args, filenames, pred_literals)
     print(f"[Predcitons are saved => ({args.prediction})]")
 
 
 def predict_single(args, model, device):
+    categories = ['Apple_Black_rot', 'Apple_healthy', 'Apple_rust', 'Apple_scab', 'Grape_Black_rot', 'Grape_Esca', 'Grape_healthy', 'Grape_spot']
     dataloaders = img_test_dataloader(args.path)
     pred = test(model, dataloaders, device)
     img1 = plt.imread(args.path)
     img2 = img_detect_leaf(img1)
-    show_image(img1, img2, pred[0])
+    show_image(img1, img2, categories[pred[0]])
 
 
 def main():
@@ -41,10 +59,8 @@ def main():
                 predict_indir(args, model, device)
             else:
                 predict_single(args, model, device)
-
         except KeyboardInterrupt:
             pass
-
     except Exception as e:
         print("Error:", e)
 

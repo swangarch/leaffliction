@@ -26,20 +26,27 @@ def count_images_in_subdirs(root_dir: str) -> dict:
 
 def plot_charts(data: dict) -> None:
     """Generate histogram and pie chart for each plant"""
+
+    colors = ["#D99090", "#90A8D1", "#A8C5A0", "#C2A0D6"]
     for plant, counts in data.items():
         labels = list(counts.keys())
         values = list(counts.values())
 
         plt.figure(figsize=(8, 5))
-        plt.bar(labels, values)
+        bars = plt.bar(labels, values)
+        for i, (bar, label) in enumerate(zip(bars, labels)):
+            bar.set_label(label)
+            bar.set_color(colors[i])
         plt.title(f"{plant} - Image Count by Category")
         plt.xlabel("Category")
         plt.ylabel("Number of Images")
         plt.tight_layout()
+        plt.legend()
         plt.show()
 
-        plt.figure(figsize=(6, 6))
-        plt.pie(values, labels=labels, autopct="%1.1f%%", startangle=90)
+        plt.figure(figsize=(8, 8))
+        plt.pie(values, labels=labels, colors=colors, autopct="%1.1f%%", startangle=90)
+        plt.legend()
         plt.title(f"{plant} - Category Distribution")
         plt.show()
 

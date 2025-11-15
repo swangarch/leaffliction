@@ -42,7 +42,6 @@ def validation(model, val_loader, device):
 
 
 def test(model, test_loader, device):
-    categories = ['Apple_Black_rot', 'Apple_healthy', 'Apple_rust', 'Apple_scab', 'Grape_Black_rot', 'Grape_Esca', 'Grape_healthy', 'Grape_spot']
     print("[Predicting on test data...]")
     prediction = []
     model.eval()
@@ -56,7 +55,7 @@ def test(model, test_loader, device):
     out = []
     for batch in prediction:
         for p in batch:
-            out.append(categories[int(p)])
+            out.append(int(p))
     return out
 
 

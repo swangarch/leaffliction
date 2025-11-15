@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import os
 import sys
 import shutil
@@ -27,7 +29,7 @@ def main():
 					if rd.random() > 0.9:
 						move_file(os.path.join(path, subdir), os.path.join(path_test, subdir), file)
 						count += 1
-					if count > 10:
+					if count > 50:
 						break
 	except Exception as e:
 		print("Error:", e)

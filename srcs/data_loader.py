@@ -39,8 +39,8 @@ def batch_test_dataloader(path:str, batch_size:int=64, train_ratio:float=0.8) ->
 		root=path,
 		transform=img_transform,
 		allow_empty=True)
-	test_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
-	return test_loader
+	test_loader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
+	return test_loader, dataset
 
 
 def img_test_dataloader(path:str, batch_size=64, train_ratio:float=0):
