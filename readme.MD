@@ -42,7 +42,7 @@ python Distribution.py leaves
 
 We observe that initial distribution results reveal significant class imbalance..
 
-![Distribution](./visualize/Grape_pie.png) ![Distribution](./visualize/Grape_bar.png)
+![Distribution](./visualize/Grape_before.jpg)
 
 ## 2.Data Autmentation
 
@@ -62,7 +62,7 @@ python Augmentation.py leaves
 ```
 After augmentation, the dataset becomes balanced and ready for model training.
 
-![Distribution](./visualize/Grape_pie_augmented.png) ![Distribution](./visualize/Grape_bar_augmented.png)
+![Distribution](./visualize/Grape_after.jpg)
 
 
 ## 3.Transformation
@@ -104,7 +104,7 @@ python train.py leaves -m RESNET
 
 Training metrics:
 
-![learningcurve](./visualize/Loss.jpg) ![learningcurve](./visualize/Accuracy.jpg)
+![learningcurve](./visualize/Metric.jpg)
 
 This module:
 
@@ -121,11 +121,17 @@ python predict.py path -l weights.pth
 
 ### Prediction on 1 image
 
+When the provided path points to a single image, the prediction module automatically loads and displays the image, generates its segmentation result and overlays the predicted label directly on the visualization.
+
 ![prediction](./visualize/Prediction1.png)
 ![prediction](./visualize/Prediction2.png)
 ![prediction](./visualize/Prediction3.png)
 
 ### Batch prediction example
+
+When path points to a directory, the folder must follow the same structure as the training dataset: each class (ground truth) should be stored inside a subfolder named after its label. This allows the script to automatically read true labels and evaluate performance.
+
+During batch prediction, the module will: iterate through all images in their respective class folders, generate predictions, compare them with ground truth labels and calculate accuracy. Finally it saves results into a CSV file in the format:
 
 ```csv
 path,prediction
