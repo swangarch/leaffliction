@@ -1,11 +1,8 @@
-import torch
 from torch.utils.data import DataLoader, random_split
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 import matplotlib.pyplot as plt
-import numpy as np
-import os
-from PIL import Image
+import os, json
 
 
 def create_dataloader(path:str, batch_size:int=64, train_ratio:float=0.8) -> None:
@@ -19,12 +16,12 @@ def create_dataloader(path:str, batch_size:int=64, train_ratio:float=0.8) -> Non
 		root=path,
 		transform=img_transform,
 		allow_empty=True)
-	print(dataset.classes)
 	len_train = int(len(dataset) * train_ratio)
 	len_val = len(dataset) - len_train
 	train_set, val_set = random_split(dataset, [len_train, len_val])
 	train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True)
 	val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=True)
+	save_categories(dataset.classes)
 	return train_loader, val_loader
 
 
@@ -55,3 +52,19 @@ def img_test_dataloader(path:str, batch_size=64, train_ratio:float=0):
 	img_tensor = img_tensor.unsqueeze(0)
 	test_loader = DataLoader(img_tensor, batch_size=batch_size, shuffle=True)
 	return test_loader
+
+
+def save_categories(categories, path="./tmp/categories.json"):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(categories, f, ensure_ascii=False, indent=2)
+    print("[Categories saved at (./tmp/categories.json)]")
+
+
+def load_categories(path="./tmp/categories.json"):
+    if not os.path.exists(path):
+        raise RuntimeError("No categories file, cannot determine the catergories.")
+    
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)

@@ -25,14 +25,15 @@ def save_prediction(args, filenames, pred_literals):
 
 def predict_indir(args, model, device):
     dataloaders, dataset = batch_test_dataloader(args.path)
+    categories = load_categories()
     pred = test(model, dataloaders, device)
     count = 0
     pred_literals = []
     filenames = []
     for i, p in enumerate(pred):
-        if p == dataset.samples[i][1]:
+        if categories[p] == dataset.classes[dataset.samples[i][1]]:
             count += 1
-        pred_literals.append(dataset.classes[p])
+        pred_literals.append(categories[p])
         filenames.append(dataset.samples[i][0])
     print(f"[Correct rate => ({100 * count / len(pred):.2f}%)  {count}/{len(pred)}]")
     save_prediction(args, filenames, pred_literals)
@@ -40,7 +41,7 @@ def predict_indir(args, model, device):
 
 
 def predict_single(args, model, device):
-    categories = ['Apple_Black_rot', 'Apple_healthy', 'Apple_rust', 'Apple_scab', 'Grape_Black_rot', 'Grape_Esca', 'Grape_healthy', 'Grape_spot']
+    categories = load_categories()
     dataloaders = img_test_dataloader(args.path)
     pred = test(model, dataloaders, device)
     img1 = plt.imread(args.path)

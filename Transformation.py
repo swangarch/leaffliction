@@ -77,11 +77,12 @@ def main():
     try:
         if len(sys.argv) != 2:
             raise TypeError("Wrong number of arguments")
-        os.makedirs("./visualization", exist_ok=True)
         path = sys.argv[1]
         if os.path.isfile(path):
             img = load_img(path)
             transform(img, path)
+        else:
+            print("Error: argument is not a file.")
     except Exception as e:
     	print("Error:", e)
 

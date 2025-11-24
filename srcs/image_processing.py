@@ -66,7 +66,6 @@ def contour_img(img, mask):
     contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     contour = max(contours, key=cv2.contourArea)
     x, y, w, h = cv2.boundingRect(contour)
-    # bounding_roi = pcv.roi.rectangle(img=mask, x=x, y=y, h=h, w=w)
     img_contour = img.copy()
     cv2.rectangle(img_contour, (x,y),(x + w, y + h), (0,0,255), 5)
     pcv.print_image(img_contour, "./visualization/contour.png")
