@@ -142,7 +142,45 @@ leaves_test/Apple_Black_rot/image (149).JPG,Apple_Black_rot
 ...
 ```
 
-The model achieves 95–97% accuracy across all 8 classes, demonstrating both reliability and practical usability.
+The model achieves 96–99% accuracy across all 8 classes, demonstrating both reliability and practical usability.
+
+## Performance tracking 
+
+To evaluate the impact of different model architectures and data augmentation strategies, we first use the script split.py to divide the dataset. From approximately 7,000 samples, 800 images are extracted as the test set, while the remaining data is used for training and validation. These test samples are completely unseen during training. Accuracy and the number of correct predictions are calculated exclusively on this independent test set.
+
+```bash
+python split.py leaves
+```
+
+Next, we optionally apply data augmentation using Augmentation.py.
+For each configuration, the model is trained and evaluated three times to obtain average accuracy.
+
+Training and predicting with the CNN model
+
+```bash
+python train.py leaves
+python predict.py leaves_test/ -l weights.pth
+```
+
+Training and predicting with the CNN-ResNet model
+
+```bash
+python train.py leaves -m RESNET
+python predict.py leaves_test/ -l weights.pth -m RESNET
+```
+
+
+|Setup |Acc1| Correct Pred1|Acc2| Correct Pred2|Acc3| Correct Pred3| avg Acc |
+|-------|------|------|------|------|------|------|------|
+|Raw + CNN| 96.75% |774/800 | 97.25%| 778/800| 96.62% | 773/800| 96.87%|
+|Raw + CNN-Resnet2| 99.50% |796/800 | 99.25%| 794/800| 99.38%| 795/800| 99.38%|
+|Augmented + CNN| 95.88% | 767/800 |  98.12% | 785/800| 97.12% | 777/800|97.04% |
+|Augmented + CNN-Resnet|99.25%| 794/800 | 98.62% | 789/800 |98.38% |  787/800| 98.75%|
+
+
+Due to the high quality of this dataset, a traditional CNN model is already able to achieve an accuracy between 96% and 97%. However, by increasing network depth and introducing residual connections, the ResNet-based model further improves overall accuracy to more than 98.5%, making the predictions more reliable. These results show that introducing ResNet significantly improves prediction accuracy compared with the baseline CNN model, both with and without data augmentation.
+
+Although data augmentation usually helps improve generalization, it seems to slightly reduce accuracy when used with ResNet in this task. My guess is that the dataset is already clean and consistent, so ResNet can learn strong features directly from the original images. Some augmentation operations might be introducing distortions that affect important details, which may not match the distribution of the clean test set. Because of this, the extra noise could be hurting the performance a little instead of helping.
 
 ## Summary
 

@@ -6,7 +6,7 @@ import shutil
 import random as rd
 
 
-def move_file(src, dst, file):
+def move_file(src: str, dst: str, file: str) -> None:
 	try:
 		f_src = os.path.join(src, file)
 		if not os.path.exists(dst):
@@ -24,13 +24,10 @@ def main():
 			path_test = path + "_test" 
 			os.makedirs(path_test, exist_ok=True)
 			for subdir in os.listdir(path):
-				count = 0
-				for file in os.listdir(os.path.join(path, subdir)):
-					if rd.random() > 0.9:
-						move_file(os.path.join(path, subdir), os.path.join(path_test, subdir), file)
-						count += 1
-					if count > 50:
-						break
+				files_in_subdir = os.listdir(os.path.join(path, subdir))
+				sample = rd.sample(files_in_subdir, 100)
+				for file in sample:
+					move_file(os.path.join(path, subdir), os.path.join(path_test, subdir), file)
 	except Exception as e:
 		print("Error:", e)
 

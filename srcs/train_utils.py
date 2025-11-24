@@ -156,5 +156,5 @@ def load_weights(model, weights_path:str, device):
         try:
             model.load_state_dict(torch.load(weights_path, map_location=device))
             print(f"[Pretrained weights => ({weights_path}) loaded]")
-        except Exception as e:
+        except Exception:
             raise ValueError("Cannot load weights, please make sure weights match network")
