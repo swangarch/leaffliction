@@ -1,21 +1,39 @@
 #!/usr/bin/python3
 
-from srcs import *
+from srcs import (select_model,
+                  use_device,
+                  load_weights,
+                  batch_test_dataloader,
+                  test,
+                  img_test_dataloader,
+                  img_detect_leaf,
+                  show_image,
+                  load_categories)
 import argparse
 import csv
+import os
+import matplotlib.pyplot as plt
+from typing import List
+from torch import nn
 
 
-def parse_arg():
+def parse_arg() -> argparse.Namespace:
+    """Parse arguments and handle options."""
     parser = argparse.ArgumentParser()
     parser.add_argument("path")
     parser.add_argument("--model", "-m", type=str, default="CNN")
     parser.add_argument("--loadweights", "-l", type=str)
-    parser.add_argument("--prediction", "-p", type=str, default="predictions.csv")
+    parser.add_argument("--prediction", "-p", type=str,
+                        default="predictions.csv")
     args = parser.parse_args()
     return args
 
 
-def save_prediction(args, filenames, pred_literals):
+def save_prediction(args: argparse.Namespace,
+                    filenames: List[str],
+                    pred_literals: List[str]) -> None:
+    """Save batch predictions in a CSV file. The predictions and the
+    original filenames have to be provided."""
     with open(args.prediction, 'w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
         writer.writerow(["path", "prediction"])
@@ -23,9 +41,13 @@ def save_prediction(args, filenames, pred_literals):
             writer.writerow([name, pred])
 
 
-def predict_indir(args, model, device):
+def predict_indir(args: argparse.Namespace, model: nn.Module,
+                  device: str, categories: List[str]) -> None:
+    """Generate predictions for images inside a directory that follows
+    the same structure as the training data. Then compare the predicted
+    labels with the true labels to calculate accuracy, and finally save
+    the predictions to a CSV file."""
     dataloaders, dataset = batch_test_dataloader(args.path)
-    categories = load_categories()
     pred = test(model, dataloaders, device)
     count = 0
     pred_literals = []
@@ -35,13 +57,16 @@ def predict_indir(args, model, device):
             count += 1
         pred_literals.append(categories[p])
         filenames.append(dataset.samples[i][0])
-    print(f"[Correct rate => ({100 * count / len(pred):.2f}%)  {count}/{len(pred)}]")
+    correct_rate = 100 * count / len(pred)
+    print(f"[Correct rate => ({correct_rate:.2f}%)  {count}/{len(pred)}]")
     save_prediction(args, filenames, pred_literals)
-    print(f"[Predcitons are saved => ({args.prediction})]")
+    print(f"[Predictions are saved => ({args.prediction})]")
 
 
-def predict_single(args, model, device):
-    categories = load_categories()
+def predict_single(args: argparse.Namespace, model: nn.Module,
+                   device: str, categories: List[str]) -> None:
+    """Generate prediction on 1 single image, and visualize it along
+    with its label."""
     dataloaders = img_test_dataloader(args.path)
     pred = test(model, dataloaders, device)
     img1 = plt.imread(args.path)
@@ -52,14 +77,15 @@ def predict_single(args, model, device):
 def main():
     try:
         args = parse_arg()
-        model = select_model(args.model)
+        categories = load_categories()
+        model = select_model(args.model, num_categories=len(categories))
         try:
             device = use_device(model)
             load_weights(model, args.loadweights, device)
             if os.path.isdir(args.path):
-                predict_indir(args, model, device)
+                predict_indir(args, model, device, categories)
             else:
-                predict_single(args, model, device)
+                predict_single(args, model, device, categories)
         except KeyboardInterrupt:
             pass
     except Exception as e:

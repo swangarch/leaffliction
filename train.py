@@ -1,10 +1,16 @@
 #!/usr/bin/python3
 
-from srcs import *
+from srcs import (create_dataloader,
+                  select_model,
+                  use_device,
+                  load_weights,
+                  train_model,
+                  save_model)
 import argparse
 
 
-def parse_arg():
+def parse_arg() -> argparse.Namespace:
+    """Parse arguments and handle options."""
     parser = argparse.ArgumentParser()
     parser.add_argument("path")
     parser.add_argument("--model", "-m", type=str, default="CNN")
@@ -19,17 +25,16 @@ def parse_arg():
 def main():
     try:
         args = parse_arg()
-        model = select_model(args.model)
+        dataloaders, num_categories = create_dataloader(args.path,
+                                                        args.batchsize)
+        model = select_model(args.model, num_categories)
         try:
             device = use_device(model)
             load_weights(model, args.loadweights, device)
-            dataloaders = create_dataloader(args.path, args.batchsize)
             train_model(model, dataloaders, device, lr=args.learningrate)
-
         except KeyboardInterrupt:
             pass
         save_model(model, args.saveweights)
-
     except Exception as e:
         print("Error:", e)
 

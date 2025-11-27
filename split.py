@@ -7,6 +7,8 @@ import random as rd
 
 
 def move_file(src: str, dst: str, file: str) -> None:
+	"""Move a file from a source directory to the other.
+	file argument is the filename."""
 	try:
 		f_src = os.path.join(src, file)
 		if not os.path.exists(dst):
