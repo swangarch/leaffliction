@@ -29,7 +29,9 @@ def main():
 				files_in_subdir = os.listdir(os.path.join(path, subdir))
 				sample = rd.sample(files_in_subdir, 100)
 				for file in sample:
-					move_file(os.path.join(path, subdir), os.path.join(path_test, subdir), file)
+					move_file(os.path.join(path, subdir), 
+			   				  os.path.join(path_test, subdir), 
+							  file)
 		else:
 			raise TypeError("Wrong argument number, Usage: python split.py <path>")
 	except Exception as e:
