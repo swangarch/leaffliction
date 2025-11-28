@@ -12,7 +12,8 @@ import argparse
 def parse_arg() -> argparse.Namespace:
     """Parse arguments and handle options."""
     parser = argparse.ArgumentParser()
-    parser.add_argument("path")
+    parser.add_argument("path_train")
+    parser.add_argument("path_val")
     parser.add_argument("--model", "-m", type=str, default="CNN")
     parser.add_argument("--loadweights", "-l", type=str)
     parser.add_argument("--saveweights", "-s", type=str, default="weights.pth")
@@ -25,7 +26,8 @@ def parse_arg() -> argparse.Namespace:
 def main():
     try:
         args = parse_arg()
-        dataloaders, num_categories = create_dataloader(args.path,
+        dataloaders, num_categories = create_dataloader(args.path_train,
+                                                        args.path_val,
                                                         args.batchsize)
         model = select_model(args.model, num_categories)
         try:

@@ -10,30 +10,34 @@ from typing import List
 from .model import CNN, RESNET
 
 
-
-def training(model:nn.Module, train_loader:DataLoader, optimizer:Optimizer, device: str) -> tuple[float, float]:
-    """Perform training phase, including feedforward, backpropagation, and gradient descent, 
-    iterating all batches form a dataset, generate predictions and then calculate accuracy."""
+def training(model: nn.Module, train_loader: DataLoader,
+             optimizer: Optimizer, device: str) -> tuple[float, float]:
+    """Perform training phase, including feedforward, backpropagation,
+    and gradient descent, iterating all batches form a dataset, generate
+    predictions and then calculate accuracy."""
     model.train()
     correct_count, loss_epoch = 0, 0
     for img, label in train_loader:
         img, label = img.to(device), label.to(device)
         optimizer.zero_grad()
-        output = model(img) # inference with model
+        output = model(img)
         pred = output.argmax(dim=1, keepdim=True)
         correct_count += pred.eq(label.view_as(pred)).sum().item()
-
         loss = F.cross_entropy(output, label.squeeze())
         loss_epoch += loss.item()
         loss.backward()
         optimizer.step()
-    loss_epoch /= len(train_loader) # number of batches in one epoch
-    correct_rate = correct_count / len(train_loader.dataset) # number of samples in all dataset
+    # number of batches in one epoch
+    loss_epoch /= len(train_loader)
+    # number of samples in all dataset
+    correct_rate = correct_count / len(train_loader.dataset)
     return loss_epoch, correct_rate
 
 
-def validation(model:nn.Module, val_loader:DataLoader, device:str) -> tuple[float, float]:
-    """Perform validation phase, use model to do inference and calculate loss and accuracy."""
+def validation(model: nn.Module, val_loader: DataLoader,
+               device: str) -> tuple[float, float]:
+    """Perform validation phase, use model to do inference
+    and calculate loss and accuracy."""
     model.eval()
     correct_count, loss_val = 0, 0
     with torch.no_grad():
@@ -48,8 +52,10 @@ def validation(model:nn.Module, val_loader:DataLoader, device:str) -> tuple[floa
     return float(loss_val), correct_rate
 
 
-def test(model:nn.Module, test_loader:DataLoader, device:str) -> List[int]:
-    """Perform test phase, use model to do inference and return the prediction numeric labels in a list."""
+def test(model: nn.Module, test_loader: DataLoader,
+         device: str) -> List[int]:
+    """Perform test phase, use model to do inference and return
+    the prediction numeric labels in a list."""
     print("[Predicting on test data...]")
     prediction = []
     model.eval()
@@ -67,9 +73,10 @@ def test(model:nn.Module, test_loader:DataLoader, device:str) -> List[int]:
     return out
 
 
-def is_early_stopped(loss_epoch:float, train_loss:float, counter:int) -> tuple[int, bool]:
-    """Check if model loss didn't change during 3 continuous epochs, the training will stop
-    to prevent overfitting."""
+def is_early_stopped(loss_epoch: float, train_loss: float,
+                     counter: int) -> tuple[int, bool]:
+    """Check if model loss didn't change during 3 continuous
+    epochs, the training will stop to prevent overfitting."""
     if loss_epoch is not None and abs(train_loss - loss_epoch) < 0.001:
         counter += 1
     else:
@@ -80,8 +87,11 @@ def is_early_stopped(loss_epoch:float, train_loss:float, counter:int) -> tuple[i
     return counter, False
 
 
-def train_model(model:nn.Module, dataloaders:tuple[DataLoader, DataLoader], device:str, lr:float=0.001) -> nn.Module:
-    """Perform mini training and validation phase, and collect result, return the model."""
+def train_model(model: nn.Module, dataloaders: tuple[DataLoader, DataLoader],
+                device: str, lr: float = 0.001,
+                max_epoch: int = 20) -> nn.Module:
+    """Perform mini training and validation phase, and collect result,
+    return the model."""
     os.makedirs("visualize", exist_ok=True)
     train_loader, val_loader = dataloaders
     optimizer = optim.Adam(model.parameters(), lr=lr)
@@ -89,23 +99,26 @@ def train_model(model:nn.Module, dataloaders:tuple[DataLoader, DataLoader], devi
     counter = 0
     print("[Training started]")
     records = [[], [], [], []]
-    for epoch in range(20):
+    for epoch in range(max_epoch):
         val_loss, acc_val = validation(model, val_loader, device)
-        train_loss, acc_train = training(model, train_loader, optimizer, device)
-
-        counter, early_stop = is_early_stopped(loss_epoch, train_loss, counter)
-        if early_stop == True:
+        t_loss, acc_t = training(model, train_loader, optimizer, device)
+        counter, early_stop = is_early_stopped(loss_epoch, t_loss, counter)
+        if early_stop is True:
             break
-        record = [train_loss, val_loss, acc_train, acc_val]
-        print(f"[Epoch] {epoch}  [Train Loss] {record[0]:.4f}  [Train Acc] ({(record[2] * 100):.0f}%)  [Val Loss] {record[1]:.4f}  [Val Acc]: ({(record[3] * 100):.0f}%)")
+        record = [t_loss, val_loss, acc_t, acc_val]
+        print(f"[Epoch] {epoch}  "
+              f"[Train Loss] {record[0]:.4f}  "
+              f"[Train Acc] ({(record[2] * 100):.0f}%)  "
+              f"[Val Loss] {record[1]:.4f}  "
+              f"[Val Acc]: ({(record[3] * 100):.0f}%)")
         append_records(records, record)
-        loss_epoch = train_loss
+        loss_epoch = t_loss
     print("[Training done.]")
     show_records(records)
     return model
 
 
-def append_records(records:list[list[float]], record: list[float]) -> None:
+def append_records(records: list[list[float]], record: list[float]) -> None:
     """Store the training metrics."""
     loss_epoch, val_loss, acc_train, acc_val = record
     loss_train_all, loss_val_all, acc_train_all, acc_val_all = records
@@ -117,7 +130,8 @@ def append_records(records:list[list[float]], record: list[float]) -> None:
 
 
 def show_records(records: list[list[float]]) -> None:
-    """Visualize the training curve and accuracy curve at the end of training."""
+    """Visualize the training curve and accuracy curve at the
+    end of training."""
     loss_train_all, loss_val_all, acc_train_all, acc_val_all = records
     plt.title("Loss curves")
     plt.plot(loss_train_all, label="Train loss")
@@ -140,7 +154,7 @@ def show_records(records: list[list[float]]) -> None:
     plt.close()
 
 
-def use_device(model:nn.Module) -> str:
+def use_device(model: nn.Module) -> str:
     """Check if CUDA is available, if available use GPU, otherwise use CPU."""
     print(f"[CUDA => ({torch.cuda.is_available()})]")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -148,10 +162,10 @@ def use_device(model:nn.Module) -> str:
     return device
 
 
-def select_model(name:str, num_categories:int) -> CNN | RESNET:
+def select_model(name: str, num_categories: int) -> CNN | RESNET:
     """Select training model according to the name."""
     if name == "RESNET":
-        print(f"[Using CNN Resnet]")
+        print("[Using CNN Resnet]")
         model = RESNET(num_classes=num_categories)
     elif name == "CNN":
         print("[Using CNN]")
@@ -161,13 +175,13 @@ def select_model(name:str, num_categories:int) -> CNN | RESNET:
     return model
 
 
-def save_model(model:nn.Module, path:str) -> None:
+def save_model(model: nn.Module, path: str) -> None:
     """Save the model weights after training."""
     torch.save(model.state_dict(), path)
     print(f"[Model saved => ({path})]")
 
 
-def load_weights(model:nn.Module, weights_path:str, device:str) -> None:
+def load_weights(model: nn.Module, weights_path: str, device: str) -> None:
     """Load weights from external weights file."""
     if weights_path is None:
         return
@@ -175,4 +189,5 @@ def load_weights(model:nn.Module, weights_path:str, device:str) -> None:
         model.load_state_dict(torch.load(weights_path, map_location=device))
         print(f"[Pretrained weights => ({weights_path}) loaded]")
     except Exception as e:
-        raise ValueError("Cannot load weights, please make sure weights match network") from e
+        raise ValueError("""Cannot load weights,
+                         please make sure weights match network""") from e
