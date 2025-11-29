@@ -12,7 +12,16 @@ from srcs.train_utils import (
                                 test)
 from srcs.image_processing import (
                                     img_detect_leaf,
-                                    show_image)
+                                    show_image,
+									blur_img,
+									hue_mask,
+									saturation_mask,
+									leaf_silhouette,
+									analyze_img,
+									contour_img,
+									extract_pseudolandmarks,
+									load_img,
+									plot_histogram)
 from srcs.model import RESNET, CNN
 
 __all__ = ["select_model", "use_device",
@@ -21,5 +30,10 @@ __all__ = ["select_model", "use_device",
            "batch_test_dataloader", "create_dataloader",
            "img_test_dataloader", "load_categories",
            "CNN", "RESNET",
-           "img_detect_leaf", "show_image"
-           ]
+           "img_detect_leaf", "show_image",
+		   "blur_img", "hue_mask",
+           "saturation_mask", "leaf_silhouette",
+           "analyze_img", "contour_img",
+           "extract_pseudolandmarks", "load_img",
+		   "plot_histogram"
+        ]

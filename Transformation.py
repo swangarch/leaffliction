@@ -6,9 +6,10 @@ import cv2
 import os
 import sys
 from srcs import *
+from numpy import ndarray as array
 
 
-def get_transform_elements(img):
+def get_transform_elements(img:array) -> tuple[list[array], list[str], list[str]]:
     objects = []
     names = []
     modes = []
@@ -53,7 +54,7 @@ def get_transform_elements(img):
     return objects, names, modes
 
 
-def display_transform(axes, objects:list, names:list, modes:list):
+def display_transform(axes, objects:list, names:list, modes:list) -> None:
     for i in range(0,3):
         for j in range(0,3):
             index = i * 3 + j
@@ -66,11 +67,12 @@ def display_transform(axes, objects:list, names:list, modes:list):
     plt.close()
 
 
-def transform(img, filename):
+def transform(img: array, filename: str) -> None:
     fig, axes = plt.subplots(3, 3, figsize=(10, 10))
     fig.suptitle(filename, fontsize=16)
     elements, names, modes = get_transform_elements(img)
     display_transform(axes, elements, names, modes)
+    plot_histogram(img)
 
 
 def main():
