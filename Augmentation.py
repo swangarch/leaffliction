@@ -5,7 +5,9 @@ import random
 import re
 from typing import List
 import cv2
+from plantcv import plantcv as pcv
 import numpy as np
+import sys
 
 
 def list_files(folder: str) -> List[str]:
@@ -13,31 +15,13 @@ def list_files(folder: str) -> List[str]:
     return [f for f in os.listdir(folder)]
 
 
-def next_image_index(folder: str, pattern=r"image\((\d+)\)\.jpg") -> int:
-    """Find the next number to use for naming augmented images"""
-    files = list_files(folder)
-    max_idx = 0
-    for f in files:
-        m = re.match(pattern, f)
-        if m:
-            try:
-                idx = int(m.group(1))
-                if idx > max_idx:
-                    max_idx = idx
-            except Exception:
-                pass
-    return max_idx + 1
-
-
-def build_index_map(root_dir: str) -> dict[str, int]:
-    """Build a map to find the max index of each subdirectory"""
-    index_map = {}
-    for sub in os.listdir(root_dir):
-        path = os.path.join(root_dir, sub)
-        if not os.path.isdir(path):
-            continue
-        index_map[path] = next_image_index(path)
-    return index_map
+def extract_base_index(filename: str) -> int:
+    """Extract numeric index from 'image(index).jpg'."""
+    fname = filename.replace(" ", "").lower()
+    m = re.search(r'image\((\d+)\)', fname)
+    if not m:
+        raise ValueError(f"Filename format wrong: {filename}")
+    return int(m.group(1))
 
 
 def aug_flip(img: np.ndarray) -> np.ndarray:
@@ -115,84 +99,122 @@ def apply_augmentation(method_name: str, img: np.ndarray,
 
 
 def balance_dataset(root: str, aug_methods: list,
-                    target_strategy: str = "max", seed: int = 42) -> None:
+                    target_strategy: str = "max") -> None:
     """Function to balance dataset by using 6 methods to generate new images.
     Methods used: flip, rotate, skew, shear, crop, distort"""
-    random.seed(seed)
-    np.random.seed(seed)
-    imap = build_index_map(root)
     counts = {}
-    
+
     for sub in os.listdir(root):
-        path = os.path.join(root, sub)
-        files = list_files(path)
+        sub_path = os.path.join(root, sub)
+        if not os.path.isdir(sub_path):
+            continue
+        files = list_files(sub_path)
         counts[sub] = len(files)
 
-    print(counts)
+    print("Counts:", counts)
+
+    name_counter = {}
+
     for sub in os.listdir(root):
+        sub_path = os.path.join(root, sub)
+        if not os.path.isdir(sub_path):
+            continue
         if target_strategy == "max":
             target = max(counts.values())
         else:
             target = int(np.ceil(sum(counts.values()) / len(counts)))
 
-        print(f"Leave type: {sub} counts = {counts}, augmentation target = {target}")
+        print(f"Leave type: {sub} counts = {counts}, \
+                augmentation target = {target}")
 
-        path = os.path.join(root, sub)
-        os.makedirs(path, exist_ok=True)
-        current_files = list_files(path)
-        current_count = len(current_files)
-        need = target - current_count
-        if need <= 0:
+        os.makedirs(sub_path, exist_ok=True)
+        files = list_files(sub_path)
+        current_count = len(files)
+        needed = target - current_count
+        if needed <= 0:
             continue
 
-        print(f"  Augmenting '{sub}' : need {need} images.")
-        next_idx = imap[path]
-        imap[path] += 1
+        print(f"  Augmenting '{sub}' : need {needed} images.")
+
         method_cycle = [name for name, _ in aug_methods]
+        num_methods = len(method_cycle)
 
-        base_pool = current_files.copy()
-        if not base_pool:
-            print(f"    WARNING: no base images in {path}, skipping.")
-            continue
+        file_index = 0
+        generated = 0
 
-        for i in range(need):
-            base_name = random.choice(base_pool)
-            base_path = os.path.join(path, base_name)
-            img = cv2.imdecode(np.fromfile(base_path, dtype=np.uint8),
+        while generated < needed:
+            base_name = files[file_index]
+            base_index_num = extract_base_index(base_name)
+            base_img_path = os.path.join(sub_path, base_name)
+
+            img = cv2.imdecode(np.fromfile(base_img_path, dtype=np.uint8),
                                cv2.IMREAD_COLOR)
             if img is None:
-                img = cv2.imread(base_path)
+                img = cv2.imread(base_img_path)
+
             if img is None:
-                print(f"    Failed to read {base_path}, skipping.")
+                print(f"    Failed to read {base_img_path}, skipping.")
+                file_index = (file_index + 1) % len(files)
                 continue
 
-            method_name = method_cycle[i % len(method_cycle)]
-
-            aug_img = apply_augmentation(method_name, img, aug_methods)
+            method_name = method_cycle[generated % num_methods]
+            fn = dict(aug_methods)[method_name]
+            aug_img = fn(img)
             h0, w0 = img.shape[:2]
-            aug_img = cv2.resize(aug_img, (w0, h0),
-                                 interpolation=cv2.INTER_LINEAR)
+            aug_img = cv2.resize(aug_img, (w0, h0))
+            key = (sub_path, base_index_num, method_name)
+            name_counter[key] = name_counter.get(key, 0) + 1
+            n = name_counter[key]
 
-            out_name = f"image({next_idx}).jpg"
-            out_path = os.path.join(path, out_name)
-            _, encimg = cv2.imencode(".jpg", aug_img,
-                                     [int(cv2.IMWRITE_JPEG_QUALITY), 95])
-            encimg.tofile(out_path)
+            if n == 1:
+                out_name = f"image({base_index_num})_{method_name}.jpg"
+            else:
+                out_name = f"image({base_index_num})_{method_name}({n}).jpg"
 
-            if (i + 1) % 10 == 0 or i == need - 1:
-                print(f"    Generated {i + 1}/{need} =>\
-                        {out_name} ({method_name})")
-            next_idx += 1
+            out_path = os.path.join(sub_path, out_name)
+            _, buf = cv2.imencode(".jpg", aug_img,
+                                  [int(cv2.IMWRITE_JPEG_QUALITY), 95])
+            buf.tofile(out_path)
+
+            generated += 1
+            file_index = (file_index + 1) % len(files)
+
+            if generated % 10 == 0 or generated == needed:
+                print(f"    Generated {generated}/{needed}: {out_name}")
 
     print("Augmentation complete.")
 
 
+def process_single_file(file_path, aug_methods):
+    img = cv2.imread(file_path)
+    if img is None:
+        raise ValueError(f"Cannot read image: {file_path}")
+
+    folder = os.path.dirname(file_path)
+    base = os.path.splitext(os.path.basename(file_path))[0]
+    ext = os.path.splitext(file_path)[1]
+
+    print(f"Processing single file: {file_path}")
+
+    for name, fn in aug_methods:
+        aug_img = fn(img)
+        out_name = f"{base}_{name}{ext}"
+        out_path = os.path.join(folder, out_name)
+
+        cv2.imwrite(out_path, aug_img)
+
+        print(f"Displaying: {out_path}")
+        pcv.plot_image(aug_img)
+
+    print("All augmentations done!")
+
+
 def main():
-    root_dir = os.path.join(".", "leaves")
-    if not os.path.isdir(root_dir):
-        print(f"Error: '{root_dir}' not found. Run this script\
-                from the project root where the 'image' folder lives.")
+    if (len(sys.argv)) != 2:
+        print("Usage: python3 Augmentation.py <path_to_file_to_augment>")
         return
+    path = sys.argv[1]
+    root_path = os.path.join(".", path)
 
     aug_methods = [
             ("flip", aug_flip),
@@ -202,7 +224,14 @@ def main():
             ("crop", aug_crop),
             ("distort", aug_distort),
         ]
-    balance_dataset(root_dir, aug_methods, target_strategy="max", seed=123)
+
+    if os.path.isfile(root_path):
+        process_single_file(root_path, aug_methods)
+    elif os.path.isdir(root_path):
+        balance_dataset(root_path, aug_methods, target_strategy="max")
+    else:
+        print(f"Error: '{root_path}' not found. Run this script\
+                from the project root where the 'image' folder lives.")
 
 
 if __name__ == "__main__":
