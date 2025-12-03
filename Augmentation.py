@@ -209,13 +209,7 @@ def process_single_file(file_path, aug_methods):
     print("All augmentations done!")
 
 
-def main():
-    if (len(sys.argv)) != 2:
-        print("Usage: python3 Augmentation.py <path_to_file_to_augment>")
-        return
-    path = sys.argv[1]
-    root_path = os.path.join(".", path)
-
+def aug_methods() -> None:
     aug_methods = [
             ("flip", aug_flip),
             ("rotate", aug_rotate),
@@ -223,15 +217,29 @@ def main():
             ("shear", aug_shear),
             ("crop", aug_crop),
             ("distort", aug_distort),
-        ]
+    ]
+    return aug_methods
 
-    if os.path.isfile(root_path):
-        process_single_file(root_path, aug_methods)
-    elif os.path.isdir(root_path):
-        balance_dataset(root_path, aug_methods, target_strategy="max")
-    else:
-        print(f"Error: '{root_path}' not found. Run this script\
-                from the project root where the 'image' folder lives.")
+
+def main():
+    try:
+        if (len(sys.argv)) != 2:
+            print("Usage: python3 Augmentation.py <path_to_file_to_augment>")
+            return
+        path = sys.argv[1]
+        root_path = os.path.join(".", path)
+
+        methods = aug_methods()
+
+        if os.path.isfile(root_path):
+            process_single_file(root_path, methods)
+        elif os.path.isdir(root_path):
+            balance_dataset(root_path, methods, target_strategy="max")
+        else:
+            print(f"Error: '{root_path}' not found. Run this script\
+                    from the project root where the 'image' folder lives.")
+    except Exception as e:
+        print("Error:", e)
 
 
 if __name__ == "__main__":

@@ -38,6 +38,19 @@ def split_data(path: str, name: str, target: str, ratio: float) -> None:
                 for file in sample]
 
 
+def split_dataset(path: str, target: str, has_test: bool) -> None:
+    """Split the dataset, saved into a target"""
+    os.makedirs(target, exist_ok=True)
+    if has_test is True:
+        split_data(path, "_test", target, 0.15)
+        split_data(path, "_val", target, 0.2)
+        split_data(path, "_train", target, -1)
+    else:
+        split_data(path, "_val", target, 0.15)
+        split_data(path, "_train", target, -1)
+    print(f"[Dataset <{path}> splitted and saved into <{target}>]")
+
+
 def main():
     try:
         if len(sys.argv) == 2:

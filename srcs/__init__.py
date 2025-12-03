@@ -13,16 +13,18 @@ from srcs.train_utils import (
 from srcs.image_processing import (
                                     img_detect_leaf,
                                     show_image,
-									blur_img,
-									hue_mask,
-									saturation_mask,
-									leaf_silhouette,
-									analyze_img,
-									contour_img,
-									extract_pseudolandmarks,
-									load_img,
-									plot_histogram)
+                                    blur_img,
+                                    hue_mask,
+                                    saturation_mask,
+                                    leaf_silhouette,
+                                    analyze_img,
+                                    contour_img,
+                                    extract_pseudolandmarks,
+                                    load_img,
+                                    plot_histogram)
 from srcs.model import RESNET, CNN
+from srcs.split import split_dataset
+
 
 __all__ = ["select_model", "use_device",
            "load_weights", "train_model",
@@ -31,9 +33,9 @@ __all__ = ["select_model", "use_device",
            "img_test_dataloader", "load_categories",
            "CNN", "RESNET",
            "img_detect_leaf", "show_image",
-		   "blur_img", "hue_mask",
+           "blur_img", "hue_mask",
            "saturation_mask", "leaf_silhouette",
            "analyze_img", "contour_img",
            "extract_pseudolandmarks", "load_img",
-		   "plot_histogram"
-        ]
+           "plot_histogram",
+           "split_dataset"]

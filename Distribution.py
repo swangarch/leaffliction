@@ -22,7 +22,8 @@ def count_images_in_subdirs(root_dir: str) -> dict:
 def plot_charts(data: dict, title: str) -> None:
     """Generate histogram and pie chart for each plant"""
 
-    colors = ["#D99090", "#90A8D1", "#A8C5A0", "#C2A0D6", "#8CBAC5", "#E5BE86", "#D27B7B", "#AE71AD"]
+    colors = ["#D99090", "#90A8D1", "#A8C5A0", "#C2A0D6",
+              "#8CBAC5", "#E5BE86", "#D27B7B", "#AE71AD"]
 
     plant = data.keys()
     counts = data.values()
@@ -42,7 +43,8 @@ def plot_charts(data: dict, title: str) -> None:
     plt.show()
 
     plt.figure(figsize=(8, 8))
-    plt.pie(values, labels=labels, colors=colors, autopct="%1.1f%%", startangle=90)
+    plt.pie(values, labels=labels, colors=colors,
+            autopct="%1.1f%%", startangle=90)
     plt.legend()
     plt.title(f"{title} - Category Distribution")
     plt.show()
@@ -51,7 +53,8 @@ def plot_charts(data: dict, title: str) -> None:
 def main():
     try:
         if len(sys.argv) != 2:
-            raise TypeError("Wrong number of arguments. Usage: python Distribution.py <path>")
+            raise TypeError("Wrong number of arguments. " +
+                            "Usage: python Distribution.py <path>")
         root_dir = os.path.join(".", sys.argv[1])
         if not os.path.isdir(root_dir):
             print(f"Error: directory '{root_dir}' not found.")
