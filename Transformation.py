@@ -22,10 +22,7 @@ def get_transform_elements(img:array) -> tuple[list[array], list[str], list[str]
     names.append("Gaussian Blur")
     modes.append("viridis")
 
-    objects.append(img_detect_leaf(img))
-    names.append("Segmentation")
-    modes.append("viridis")
-
+    hm = hue_mask(img)
     objects.append(hue_mask(img))
     names.append("Hue mask")
     modes.append("gray")
@@ -43,11 +40,16 @@ def get_transform_elements(img:array) -> tuple[list[array], list[str], list[str]
     names.append("Analyze object")
     modes.append("viridis")
 
-    objects.append(contour_img(img, sm))
+    objects.append(img_detect_leaf(img, hm, sm))
+    names.append("Segmentation")
+    modes.append("viridis")
+
+    mm = pcv.logical_and(hm, sm)
+    objects.append(contour_img(img, mm))
     names.append("Roi object")
     modes.append("viridis")
 
-    objects.append(extract_pseudolandmarks(img, sm))
+    objects.append(extract_pseudolandmarks(img, mm))
     names.append("Pseudolandmarks")
     modes.append("viridis")
 

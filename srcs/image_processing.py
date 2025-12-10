@@ -29,11 +29,34 @@ def img_show_hist(img: array) -> None:
     pcv.print_image(hist, "./visualization/histogram.png")
 
 
-# Transform-------------------
-def img_detect_leaf(img: array) -> array:
+# # Transform-------------------
+# def img_detect_leaf(img: array) -> array:
+#     # img = pcv.gaussian_blur(img, (5,5), sigma_x=0, sigma_y=0)
+#     saturation_img = pcv.rgb2gray_hsv(img, "s")
+#     mask = pcv.threshold.binary(gray_img=saturation_img, threshold=40, object_type='light')
+#     masked_img = pcv.apply_mask(img=img, mask=mask, mask_color="white")
+#     return masked_img
+
+
+def img_detect_leaf(img: array, hm:array, sm:array) -> array:
     # img = pcv.gaussian_blur(img, (5,5), sigma_x=0, sigma_y=0)
-    saturation_img = pcv.rgb2gray_hsv(img, "s")
-    mask = pcv.threshold.binary(gray_img=saturation_img, threshold=40, object_type='light')
+    # saturation_img = pcv.rgb2gray_hsv(img, "h")
+    # mask = pcv.threshold.binary(gray_img=saturation_img, threshold=40, object_type='light')
+    # hue_img = pcv.rgb2gray_hsv(img, "H")
+    # hue_img = pcv.gaussian_blur(hue_img, (5,5), sigma_x=0, sigma_y=0)
+    # hmask_low = pcv.threshold.binary(gray_img=hue_img, threshold=40, object_type='light')
+    # hmask_high = pcv.threshold.binary(gray_img=hue_img, threshold=130, object_type='dark')
+
+    # saturation_img = pcv.rgb2gray_hsv(img, "s")
+    # saturation_img = pcv.gaussian_blur(saturation_img, (5,5), sigma_x=0, sigma_y=0)
+    # smask_low = pcv.threshold.binary(gray_img=saturation_img, threshold=35, object_type='light')
+    # smask_high = pcv.threshold.binary(gray_img=saturation_img, threshold=255, object_type='dark')
+
+    # hmask = pcv.logical_and(hmask_low, hmask_high)
+    # smask = pcv.logical_and(smask_low, smask_high)
+
+    mask = pcv.logical_and(hm, sm)
+    # mask = cv2.bitwise_not(mask)
     masked_img = pcv.apply_mask(img=img, mask=mask, mask_color="white")
     return masked_img
 
@@ -56,7 +79,7 @@ def hue_mask(img: array) -> array:
 
 def saturation_mask(img) -> array:
     saturation_img = pcv.rgb2gray_hsv(img, "s")
-    mask = pcv.threshold.binary(gray_img=saturation_img, threshold=40, object_type='light')
+    mask = pcv.threshold.binary(gray_img=saturation_img, threshold=25, object_type='light')
     pcv.print_image(mask, "./visualization/saturation_mask.png")
     return mask
 
@@ -103,6 +126,28 @@ def extract_pseudolandmarks(img: array, mask: array) -> array:
 
 
 def plot_histogram(img: array) -> None:
+
+    # binary_mask = pcv.threshold.binary(img, 120, "dark")
+
+    # # Step 2: 找到连通块（替代 find_objects）
+    # labeled_mask = pcv.connected_components(binary_mask)[0]  # 返回 (mask, objs, hierarchy)
+
+    # # Step 3: 将所有连通区域合并成一个 mask（因为 analyze.color 不接受 label mask）
+    # final_mask = np.where(labeled_mask > 0, 255, 0).astype("uint8")
+    
+
+    # color_histogram = pcv.analyze.color(
+    #         rgb_img=img,
+    #         labeled_mask=labeled_mask,
+    #         colorspaces="all",
+    #         label="default",
+    #     )
+
+    # pcv.print_image(
+    #             color_histogram,
+    #             filename="color_histogram.JPG",
+    #         )
+
     colors = ["red", "green", "blue"]
     plt.figure(figsize=(10, 5))
     for i, color in enumerate(colors):
