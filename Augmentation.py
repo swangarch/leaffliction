@@ -25,8 +25,8 @@ def extract_base_index(filename: str) -> int:
 
 
 def aug_flip(img: np.ndarray) -> np.ndarray:
-    """Horizontally flips the image"""
-    return cv2.flip(img, 1)
+    """Vertically flips the image"""
+    return cv2.flip(img, 0)
 
 
 def aug_rotate(img: np.ndarray, angle: float = None) -> np.ndarray:
@@ -48,7 +48,7 @@ def aug_shear(img: np.ndarray, max_shear=0.3) -> np.ndarray:
                           borderMode=cv2.BORDER_REFLECT101)
 
 
-def aug_skew(img: np.ndarray, max_skew=0.3) -> np.ndarray:
+def aug_skew(img: np.ndarray, max_skew=0.5) -> np.ndarray:
     """Applies a vertical skew (top/bottom shift) to the image"""
     h, w = img.shape[:2]
     sk = random.uniform(-max_skew, max_skew)
@@ -195,6 +195,8 @@ def process_single_file(file_path, aug_methods):
     ext = os.path.splitext(file_path)[1]
 
     print(f"Processing single file: {file_path}")
+    print(f"Displaying: {file_path}")
+    pcv.plot_image(img)
 
     for name, fn in aug_methods:
         aug_img = fn(img)
