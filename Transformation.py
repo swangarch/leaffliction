@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 
 import matplotlib.pyplot as plt
-from plantcv import plantcv as pcv
-import cv2
 import os
 import sys
 from srcs import *
@@ -13,6 +11,7 @@ def get_transform_elements(img:array) -> tuple[list[array], list[str], list[str]
     objects = []
     names = []
     modes = []
+    leaf_mask = get_leaf_mask(img)
 
     objects.append(img)
     names.append("Original")
@@ -22,7 +21,10 @@ def get_transform_elements(img:array) -> tuple[list[array], list[str], list[str]
     names.append("Gaussian Blur")
     modes.append("viridis")
 
-    hm = hue_mask(img)
+    objects.append(img_detect_leaf(img))
+    names.append("Segmentation")
+    modes.append("viridis")
+
     objects.append(hue_mask(img))
     names.append("Hue mask")
     modes.append("gray")
@@ -31,25 +33,19 @@ def get_transform_elements(img:array) -> tuple[list[array], list[str], list[str]
     names.append("Saturation mask")
     modes.append("gray")
 
-    objects.append(leaf_silhouette(img))
+    objects.append(binary_mask(img))
     names.append("Binary mask")
     modes.append("gray")
 
-    sm = saturation_mask(img)
-    objects.append(analyze_img(img, sm))
+    objects.append(analyze_img(img, leaf_mask))
     names.append("Analyze object")
     modes.append("viridis")
 
-    objects.append(img_detect_leaf(img, hm, sm))
-    names.append("Segmentation")
-    modes.append("viridis")
-
-    mm = pcv.logical_and(hm, sm)
-    objects.append(contour_img(img, mm))
+    objects.append(contour_img(img, leaf_mask))
     names.append("Roi object")
     modes.append("viridis")
 
-    objects.append(extract_pseudolandmarks(img, mm))
+    objects.append(extract_pseudolandmarks(img, leaf_mask))
     names.append("Pseudolandmarks")
     modes.append("viridis")
 
@@ -78,7 +74,7 @@ def transform(img: array, filename: str) -> None:
 
 
 def main():
-    try:
+    # try:
         if len(sys.argv) != 2:
             raise TypeError("Wrong number of arguments")
         path = sys.argv[1]
@@ -87,8 +83,8 @@ def main():
             transform(img, path)
         else:
             print("Error: argument is not a file.")
-    except Exception as e:
-    	print("Error:", e)
+    # except Exception as e:
+    # 	print("Error:", e)
 
 
 if __name__ == "__main__":

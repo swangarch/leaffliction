@@ -67,18 +67,18 @@ def img_test_dataloader(path: str) -> DataLoader[Tensor]:
 
 
 def save_categories(categories: List[str], path:
-                    str = "./tmp/categories.json") -> None:
+                    str = "./categories/categories.json") -> None:
     """Save the categories in a json file, during the training phase,
     to pass the string label to prediction phase, the prediction program
     will load these labels."""
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(categories, f, ensure_ascii=False, indent=2)
-    print(f"[Categories saved at (./tmp/categories.json) "
+    print(f"[Categories saved at (./categories/categories.json) "
           f"with {len(categories)} categories.]")
 
 
-def load_categories(path: str = "./tmp/categories.json") -> List[str]:
+def load_categories(path: str = "./categories/categories.json") -> List[str]:
     """During the prediction the model output will be int, so it needs to
     load string category names saved by the training program."""
     if not os.path.exists(path):

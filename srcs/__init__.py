@@ -16,12 +16,13 @@ from srcs.image_processing import (
                                     blur_img,
                                     hue_mask,
                                     saturation_mask,
-                                    leaf_silhouette,
+                                    binary_mask,
                                     analyze_img,
                                     contour_img,
                                     extract_pseudolandmarks,
                                     load_img,
-                                    plot_histogram)
+                                    plot_histogram,
+                                    get_leaf_mask)
 from srcs.model import RESNET, CNN
 from srcs.split import split_dataset
 
@@ -34,7 +35,7 @@ __all__ = ["select_model", "use_device",
            "CNN", "RESNET",
            "img_detect_leaf", "show_image",
            "blur_img", "hue_mask",
-           "saturation_mask", "leaf_silhouette",
+           "saturation_mask", "binary_mask", "get_leaf_mask",
            "analyze_img", "contour_img",
            "extract_pseudolandmarks", "load_img",
            "plot_histogram",

@@ -8,9 +8,7 @@ from srcs import (select_model,
                   img_test_dataloader,
                   img_detect_leaf,
                   show_image,
-                  load_categories,
-                  saturation_mask,
-                  hue_mask
+                  load_categories
                   )
 import argparse
 import csv
@@ -73,9 +71,7 @@ def predict_single(args: argparse.Namespace, model: nn.Module,
     dataloaders = img_test_dataloader(args.path)
     pred = test(model, dataloaders, device)
     img1 = plt.imread(args.path)
-    sm = saturation_mask(img1)
-    hm = hue_mask(img1)
-    img2 = img_detect_leaf(img1, hm, sm)
+    img2 = img_detect_leaf(img1)
     show_image(img1, img2, categories[pred[0]])
 
 
