@@ -87,7 +87,7 @@ def main():
     if len(sys.argv) == 2:
         path = sys.argv[1]
         if os.path.isfile(path):
-            transform(path)
+            transform(path, path)
         else:
             print("Error: argument is not a file.")
     else:

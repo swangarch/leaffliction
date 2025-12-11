@@ -3,6 +3,7 @@
 import matplotlib.pyplot as plt
 from plantcv import plantcv as pcv
 from numpy import ndarray as array
+import numpy as np
 import cv2
 
 
@@ -75,6 +76,9 @@ def contour_img(img: array, mask: array, path:str = "./visualization/contour.png
     x, y, w, h = cv2.boundingRect(contour)
     img_contour = img.copy()
     cv2.rectangle(img_contour, (x,y),(x + w, y + h), (0,0,255), 5)
+    green_color = [0, 255, 0]
+    mask = mask.astype(np.uint8)
+    img_contour[mask == 255] = green_color
     pcv.print_image(img_contour, path)
     return img_contour
 
