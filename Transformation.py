@@ -5,6 +5,7 @@ import os
 import sys
 from srcs import *
 from numpy import ndarray as array
+import argparse
 
 
 def get_transform_elements(img:array) -> tuple[list[array], list[str], list[str]]:
@@ -52,7 +53,8 @@ def get_transform_elements(img:array) -> tuple[list[array], list[str], list[str]
     return objects, names, modes
 
 
-def display_transform(axes, objects:list, names:list, modes:list) -> None:
+def display_transform(axes, objects:list, names:list, modes:list, \
+                      dst: str, op=0) -> None:
     for i in range(0,3):
         for j in range(0,3):
             index = i * 3 + j
@@ -61,31 +63,61 @@ def display_transform(axes, objects:list, names:list, modes:list) -> None:
                 axes[i][j].set_title(names[index])
                 axes[i][j].set_xticks([])
                 axes[i][j].set_yticks([])
-    plt.show()
+    if op == 0:
+        plt.show()
+    else:
+        plt.savefig(dst)
+
     plt.close()
 
 
-def transform(img: array, filename: str) -> None:
+def transform(filename: str, op=False, dst_path="") -> None:
+    img = load_img(filename)
     fig, axes = plt.subplots(3, 3, figsize=(10, 10))
     fig.suptitle(filename, fontsize=16)
     elements, names, modes = get_transform_elements(img)
-    display_transform(axes, elements, names, modes)
-    plot_histogram(img)
+    display_transform(axes, elements, names, modes, dst_path, op)
+    if op == False:
+        plot_histogram(img)
 
 
 def main():
-    # try:
-        if len(sys.argv) != 2:
-            raise TypeError("Wrong number of arguments")
+    if len(sys.argv) == 2:
         path = sys.argv[1]
         if os.path.isfile(path):
-            img = load_img(path)
-            transform(img, path)
+            transform(path)
         else:
             print("Error: argument is not a file.")
-    # except Exception as e:
-    # 	print("Error:", e)
+    else:
+        parser = argparse.ArgumentParser(
+            description="Program to transform target images from source path \
+                         and save the result to destination path",
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter
+        )
+        parser.add_argument("-src", "--source", type=str, required=True,
+                        help="Path to the input file or directory")
+        parser.add_argument("-dst", "--destination", type=str, required=True,
+                            help="Path to save the output")
+        args = parser.parse_args()
+        src = args.source
+        dst = args.destination
+        if not os.path.exists(src):
+            print(f"Error: The source path '{src}' does not exist")
+            sys.exit(1)
 
+        if not os.path.exists(dst):
+            os.makedirs(dst)
+
+        if os.path.isfile(src):
+            transform(src)
+        elif os.path.isdir(src):
+            for f in os.listdir(src):
+                path = os.path.join(src, f)
+                if not os.path.isfile(path):
+                    print(f"Error: {path} in the source directory is not a file")
+                    continue
+                transform(path, 1, dst)
+        print(f"Transformation completed! Results saved to {dst}")
 
 if __name__ == "__main__":
     main()
