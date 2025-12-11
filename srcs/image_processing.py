@@ -25,57 +25,64 @@ def load_img(path: str) -> array:
     return img
 
 
-# # Transform-------------------
 def get_leaf_mask(img: array) -> array:
-    img = pcv.gaussian_blur(img, (5,5), sigma_x=0, sigma_y=0)
+    img = pcv.gaussian_blur(img, (5, 5), sigma_x=0, sigma_y=0)
     hm = hue_mask(img)
     sm = saturation_mask(img)
     mask = pcv.logical_and(hm, sm)
     return mask
 
 
-def img_detect_leaf(img: array, path:str = "./visualization/segmentation.png") -> array:
+def img_detect_leaf(img: array,
+                    path: str = "./visual/segmentation.png") -> array:
     mask = get_leaf_mask(img)
     masked_img = pcv.apply_mask(img=img, mask=mask, mask_color="white")
     pcv.print_image(masked_img, path)
     return masked_img
 
 
-def blur_img(img: array, path: str = "./visualization/blurred.png") -> array:
-    blurred_img = pcv.gaussian_blur(img, (5,5), sigma_x=0, sigma_y=0)
+def blur_img(img: array, path: str = "./visual/blurred.png") -> array:
+    blurred_img = pcv.gaussian_blur(img, (5, 5), sigma_x=0, sigma_y=0)
     pcv.print_image(blurred_img, path)
     return blurred_img
 
 
-def hue_mask(img: array, path: str = "./visualization/hue_mask.png") -> array:
+def hue_mask(img: array, path: str = "./visual/hue_mask.png") -> array:
     hue_img = pcv.rgb2gray_hsv(img, "H")
-    mask_low = pcv.threshold.binary(gray_img=hue_img, threshold=35, object_type='light')
-    mask_high = pcv.threshold.binary(gray_img=hue_img, threshold=105, object_type='light')
+    mask_low = pcv.threshold.binary(gray_img=hue_img,
+                                    threshold=35, object_type='light')
+    mask_high = pcv.threshold.binary(gray_img=hue_img,
+                                     threshold=105, object_type='light')
     mask = pcv.logical_and(mask_low, mask_high)
     mask = cv2.bitwise_not(mask)
     pcv.print_image(mask, path)
     return mask
 
 
-def saturation_mask(img: array, path: str = "./visualization/saturation_mask.png") -> array:
+def saturation_mask(img: array,
+                    path: str = "./visual/satura_mask.png") -> array:
     saturation_img = pcv.rgb2gray_hsv(img, "S")
-    mask = pcv.threshold.binary(gray_img=saturation_img, threshold=25, object_type='light')
+    mask = pcv.threshold.binary(gray_img=saturation_img,
+                                threshold=25, object_type='light')
     pcv.print_image(mask, path)
     return mask
 
 
-def analyze_img(img: array, mask: array, path: str="./visualization/analyze.png") -> array:
+def analyze_img(img: array, mask: array,
+                path: str = "./visual/analyze.png") -> array:
     analyze_img = pcv.analyze.size(img=img, labeled_mask=mask, label="default")
     pcv.print_image(analyze_img, path)
     return analyze_img
 
 
-def contour_img(img: array, mask: array, path:str = "./visualization/contour.png") -> array:
-    contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+def contour_img(img: array, mask: array,
+                path: str = "./visual/contour.png") -> array:
+    contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL,
+                                           cv2.CHAIN_APPROX_SIMPLE)
     contour = max(contours, key=cv2.contourArea)
     x, y, w, h = cv2.boundingRect(contour)
     img_contour = img.copy()
-    cv2.rectangle(img_contour, (x,y),(x + w, y + h), (0,0,255), 5)
+    cv2.rectangle(img_contour, (x, y), (x + w, y + h), (0, 0, 255), 5)
     green_color = [0, 255, 0]
     mask = mask.astype(np.uint8)
     img_contour[mask == 255] = green_color
@@ -83,7 +90,7 @@ def contour_img(img: array, mask: array, path:str = "./visualization/contour.png
     return img_contour
 
 
-def binary_mask(img: array, path: str = "./visualization/binary.png") -> array:
+def binary_mask(img: array, path: str = "./visual/binary.png") -> array:
     blur = cv2.GaussianBlur(img, (5, 5), 0)
     gray = cv2.cvtColor(blur, cv2.COLOR_BGR2GRAY)
     _, binary = cv2.threshold(
@@ -96,15 +103,18 @@ def binary_mask(img: array, path: str = "./visualization/binary.png") -> array:
 def render_points(img: array, points: list, color: tuple) -> None:
     for i in range(len(points)):
         for (x, y) in points[i]:
-            cv2.circle(img, (int(x), int(y)), radius=5, color=color, thickness=-1)
+            cv2.circle(img, (int(x), int(y)), radius=5,
+                       color=color, thickness=-1)
 
 
-def extract_pseudolandmarks(img: array, mask: array, path: str = "./visualization/pseudolandmarks.png") -> array:
-    top, bottom, center_v = pcv.homology.y_axis_pseudolandmarks(img=img, mask=mask)
+def extract_pseudolandmarks(img: array, mask: array,
+                            path: str = "./visual/pseudolm.png") -> array:
+    top, bottom, center_v = pcv.homology.y_axis_pseudolandmarks(img=img,
+                                                                mask=mask)
     img_p = img.copy()
-    render_points(img_p, top, (0,0,255))
-    render_points(img_p, bottom, (0,255,0))
-    render_points(img_p, center_v, (255,0,0))
+    render_points(img_p, top, (0, 0, 255))
+    render_points(img_p, bottom, (0, 255, 0))
+    render_points(img_p, center_v, (255, 0, 0))
     pcv.print_image(img_p, path)
     return img_p
 
@@ -114,7 +124,7 @@ def plot_histogram(img: array) -> None:
     colors = ["red", "green", "blue"]
     plt.figure(figsize=(10, 5))
     for i, color in enumerate(colors):
-        hist = cv2.calcHist([img], [i], None, [256], [0,256])
+        hist = cv2.calcHist([img], [i], None, [256], [0, 256])
         plt.plot(hist, color=color, label=color)
     plt.title("Image Color Histogram")
     plt.xlabel("Pixel intensity")

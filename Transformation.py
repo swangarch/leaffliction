@@ -3,12 +3,24 @@
 import matplotlib.pyplot as plt
 import os
 import sys
-from srcs import *
+from srcs import (
+                    img_detect_leaf,
+                    blur_img,
+                    hue_mask,
+                    saturation_mask,
+                    binary_mask,
+                    analyze_img,
+                    contour_img,
+                    extract_pseudolandmarks,
+                    load_img,
+                    plot_histogram,
+                    get_leaf_mask)
 from numpy import ndarray as array
 import argparse
 
 
-def get_transform_elements(img:array) -> tuple[list[array], list[str], list[str]]:
+def get_transform_elements(img: array) -> tuple[list[array],
+                                                list[str], list[str]]:
     objects = []
     names = []
     modes = []
@@ -53,10 +65,10 @@ def get_transform_elements(img:array) -> tuple[list[array], list[str], list[str]
     return objects, names, modes
 
 
-def display_transform(axes, objects:list, names:list, modes:list, \
-        dst: str, file: str, op=False) -> None:
-    for i in range(0,3):
-        for j in range(0,3):
+def display_transform(axes, objects: list, names: list, modes: list,
+                      dst: str, file: str, op: bool = False) -> None:
+    for i in range(0, 3):
+        for j in range(0, 3):
             index = i * 3 + j
             if index < len(objects):
                 axes[i][j].imshow(objects[index], cmap=modes[index])
@@ -79,7 +91,7 @@ def transform(file: str, path: str, op=False, dst_path="") -> None:
     fig.suptitle(file, fontsize=16)
     elements, names, modes = get_transform_elements(img)
     display_transform(axes, elements, names, modes, dst_path, file, op)
-    if op == False:
+    if not op:
         plot_histogram(img)
 
 
@@ -92,12 +104,12 @@ def main():
             print("Error: argument is not a file.")
     else:
         parser = argparse.ArgumentParser(
-            description="Program to transform target images from source path \
-                         and save the result to destination path",
+            description="""Program to transform target images from source path
+                         and save the result to destination path""",
             formatter_class=argparse.ArgumentDefaultsHelpFormatter
         )
         parser.add_argument("-src", "--source", type=str, required=True,
-                        help="Path to the input file or directory")
+                            help="Path to the input file or directory")
         parser.add_argument("-dst", "--destination", type=str, required=True,
                             help="Path to save the output")
         args = parser.parse_args()
@@ -116,10 +128,11 @@ def main():
             for f in os.listdir(src):
                 path = os.path.join(src, f)
                 if not os.path.isfile(path):
-                    print(f"Error: {path} in the source directory is not a file")
+                    print(f"Error: {path} in the source is not a file")
                     continue
                 transform(f, path, 1, dst)
         print(f"Transformation completed! Results saved to {dst}")
+
 
 if __name__ == "__main__":
     main()
