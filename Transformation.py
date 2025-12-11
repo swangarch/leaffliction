@@ -54,7 +54,7 @@ def get_transform_elements(img:array) -> tuple[list[array], list[str], list[str]
 
 
 def display_transform(axes, objects:list, names:list, modes:list, \
-                      dst: str, op=0) -> None:
+        dst: str, file: str, op=False) -> None:
     for i in range(0,3):
         for j in range(0,3):
             index = i * 3 + j
@@ -63,20 +63,22 @@ def display_transform(axes, objects:list, names:list, modes:list, \
                 axes[i][j].set_title(names[index])
                 axes[i][j].set_xticks([])
                 axes[i][j].set_yticks([])
-    if op == 0:
+    if not op:
         plt.show()
     else:
-        plt.savefig(dst)
+        path = os.path.join(dst, file)
+        plt.savefig(path)
 
     plt.close()
 
 
-def transform(filename: str, op=False, dst_path="") -> None:
-    img = load_img(filename)
+def transform(file: str, path: str, op=False, dst_path="") -> None:
+    print(f"Transforming {path}")
+    img = load_img(path)
     fig, axes = plt.subplots(3, 3, figsize=(10, 10))
-    fig.suptitle(filename, fontsize=16)
+    fig.suptitle(file, fontsize=16)
     elements, names, modes = get_transform_elements(img)
-    display_transform(axes, elements, names, modes, dst_path, op)
+    display_transform(axes, elements, names, modes, dst_path, file, op)
     if op == False:
         plot_histogram(img)
 
@@ -116,7 +118,7 @@ def main():
                 if not os.path.isfile(path):
                     print(f"Error: {path} in the source directory is not a file")
                     continue
-                transform(path, 1, dst)
+                transform(f, path, 1, dst)
         print(f"Transformation completed! Results saved to {dst}")
 
 if __name__ == "__main__":
