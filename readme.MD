@@ -98,11 +98,15 @@ The project supports multiple model architectures for comparing their performanc
 - **CNN**
 - **ResNet-based CNN**
 
+-m to Choose model, -sp to split dataset with -a augmentation on training data. -t if there is test data.
+If -sp not provided, training dataset and validation dataset need to be set as arguments.
+
 ```bash
-python train.py leaves -m CNN
+python train.py leaves -m CNN -sp -a
 # or
-python train.py leaves -m RESNET
+python train.py leaves -m RESNET -sp -a
 ```
+
 
 Training metrics:
 
@@ -120,6 +124,8 @@ This module:
 ```bash
 python predict.py path -l weights.pth
 ```
+
+-m to spicify the model.
 
 ### Prediction on 1 image
 
@@ -149,7 +155,7 @@ The model achieves 96–99% accuracy across all 8 classes, demonstrating both re
 To evaluate the impact of different model architectures and data augmentation strategies, we first use the script split.py to divide the dataset. From approximately 7,000 samples, 800 images are extracted as the test set, while the remaining data is used for training and validation. These test samples are completely unseen during training. Accuracy and the number of correct predictions are calculated exclusively on this independent test set.
 
 ```bash
-python split.py leaves
+python srcs/split.py leaves
 ```
 
 Next, we optionally apply data augmentation using Augmentation.py.
