@@ -18,9 +18,9 @@ def list_files(folder: str) -> List[str]:
 def extract_base_index(filename: str) -> int:
     """Extract numeric index from 'image(index).jpg'."""
     fname = filename.replace(" ", "").lower()
-    m = re.search(r'image\((\d+)\)', fname)
+    m = re.search(r'\((\d+)\)', fname)
     if not m:
-        raise ValueError(f"Filename format wrong: {filename}")
+        return 0
     return int(m.group(1))
 
 
