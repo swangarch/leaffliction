@@ -34,7 +34,7 @@ def plot_charts(data: dict, title: str) -> None:
     bars = plt.bar(labels, values)
     for i, (bar, label) in enumerate(zip(bars, labels)):
         bar.set_label(label)
-        bar.set_color(colors[i])
+        bar.set_color(colors[i // len(colors)])
     plt.title(f"{title} - Image Count by Category")
     plt.xlabel("Category")
     plt.ylabel("Number of Images")
@@ -51,7 +51,7 @@ def plot_charts(data: dict, title: str) -> None:
 
 
 def main():
-    try:
+    # try:
         if len(sys.argv) != 2:
             raise TypeError("Wrong number of arguments. " +
                             "Usage: python Distribution.py <path>")
@@ -64,8 +64,8 @@ def main():
             print("No valid subdirectories with images found.")
             return
         plot_charts(data, sys.argv[1])
-    except Exception as e:
-        print("Error:", e)
+    # except Exception as e:
+    #     print("Error:", e)
 
 
 if __name__ == "__main__":
