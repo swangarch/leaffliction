@@ -33,6 +33,28 @@ The dataset contains two plant species—grape and apple—each with four health
 
 Each subfolder inside the dataset directory represents one class, and the folder name corresponds directly to the species and its condition. This makes the data automatically interpretable.
 
+structure
+```
+leaves/
+├── Apple_Black_rot
+│   ├── image1.JPG
+│   ├── image2.JPG
+│   ├── image3.JPG
+│   └── image4.JPG
+|   └── ...
+└── Apple_healthy
+    ├── image1.JPG
+    ├── image2.JPG
+    ├── image3.JPG
+    └── image4.JPG
+    └── ...
+└── ...
+```
+
+The project can be used for other dataset following this directory structure. 
+It's tested on 38 categories full plantvillage dataset, 98% accuracy is achieved. 
+
+
 ## 1.Distribution Anaylsis
 
 This module analyzes the dataset by scanning subdirectories, counts images per class, and generates:
