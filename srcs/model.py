@@ -6,15 +6,20 @@ from torch import Tensor
 
 class CNN(nn.Module):
     """A CNN model used for classification."""
-    def __init__(self, in_channels: int = 3, out_channels: int = 8) -> None:
+    def __init__(self, in_channels: int = 3, out_channels: int = 8,
+                 train_mode: bool = True) -> None:
         """We use 4 convolutional layers and max pooling, with 2 fully
         connected layer, connected directly with output layers."""
         super().__init__()
+
+        self.train_mode = train_mode
+
         self.conv1 = nn.Conv2d(in_channels, 20, (3, 3), padding=1)
         self.conv2 = nn.Conv2d(20, 32, (3, 3), padding=1)
         self.conv3 = nn.Conv2d(32, 64, (3, 3), padding=1)
         self.conv4 = nn.Conv2d(64, 128, (3, 3), padding=1)
-        self.dropout = nn.Dropout(0.5)
+        if self.train_mode:
+            self.dropout = nn.Dropout(0.5)
         self.fc1 = nn.Linear(128 * 16 * 16, 256)
         self.fc2 = nn.Linear(256, out_channels)
 
@@ -36,7 +41,8 @@ class CNN(nn.Module):
         x = torch.flatten(x, 1)
         x = self.fc1(x)
         x = F.relu(x)
-        x = self.dropout(x)
+        if self.train_mode:
+            x = self.dropout(x)
         x = self.fc2(x)
         return x
 

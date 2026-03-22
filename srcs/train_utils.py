@@ -73,14 +73,16 @@ def test(model: nn.Module, test_loader: DataLoader,
     return out
 
 
-def is_early_stopped(loss_epoch: float, train_loss: float,
+def is_early_stopped(loss_epoch: float | None, val_loss: float,
                      counter: int) -> tuple[int, bool]:
-    """Check if model loss didn't change during 3 continuous
+    """Check if model validation loss didn't change during 3 continuous
     epochs, the training will stop to prevent overfitting."""
-    if loss_epoch is not None and abs(train_loss - loss_epoch) < 0.001:
-        counter += 1
-    else:
+    if not loss_epoch:
+        return 0, False
+    if loss_epoch and val_loss < loss_epoch - 0.001:
         counter = 0
+    else:
+        counter += 1
     if counter >= 3:
         print("[Early stopped.]")
         return counter, True
@@ -95,14 +97,15 @@ def train_model(model: nn.Module, dataloaders: tuple[DataLoader, DataLoader],
     os.makedirs("visualize", exist_ok=True)
     train_loader, val_loader = dataloaders
     optimizer = optim.Adam(model.parameters(), lr=lr)
-    loss_epoch = None
+    best_val_loss = None
     counter = 0
     print("[Training started]")
     records = [[], [], [], []]
     for epoch in range(max_epoch):
-        val_loss, acc_val = validation(model, val_loader, device)
         t_loss, acc_t = training(model, train_loader, optimizer, device)
-        counter, early_stop = is_early_stopped(loss_epoch, t_loss, counter)
+        val_loss, acc_val = validation(model, val_loader, device)
+        counter, early_stop = is_early_stopped(best_val_loss,
+                                               val_loss, counter)
         if early_stop is True:
             break
         record = [t_loss, val_loss, acc_t, acc_val]
@@ -112,7 +115,10 @@ def train_model(model: nn.Module, dataloaders: tuple[DataLoader, DataLoader],
               f"[Val Loss] {record[1]:.4f}  "
               f"[Val Acc]: ({(record[3] * 100):.0f}%)")
         append_records(records, record)
-        loss_epoch = t_loss
+        if best_val_loss and val_loss < best_val_loss:
+            torch.save(model.state_dict(), "best_model.pth")
+        best_val_loss = min(val_loss,
+                            best_val_loss) if best_val_loss else val_loss
     print("[Training done.]")
     show_records(records)
     return model

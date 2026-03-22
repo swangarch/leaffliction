@@ -6,6 +6,7 @@ from srcs import (select_model,
                   batch_test_dataloader,
                   test,
                   img_test_dataloader,
+                  img_test_dataloader_from_numpy,
                   img_detect_leaf,
                   show_image,
                   load_categories
@@ -14,6 +15,7 @@ import argparse
 import csv
 import os
 import matplotlib.pyplot as plt
+import numpy as np
 from typing import List
 from torch import nn
 
@@ -73,6 +75,25 @@ def predict_single(args: argparse.Namespace, model: nn.Module,
     img1 = plt.imread(args.path)
     img2 = img_detect_leaf(img1)
     show_image(img1, img2, categories[pred[0]])
+    return {
+        "catID": pred[0],
+        "category": categories[pred[0]],
+        "success": True
+    }
+
+
+def predict_single_server(arr: np.array,
+                          model: nn.Module,
+                          device: str,
+                          categories: List[str]) -> None:
+    """Generate prediction on 1 single image, and return it's label."""
+    dataloaders = img_test_dataloader_from_numpy(arr)
+    pred = test(model, dataloaders, device)
+    return {
+        "catID": pred[0],
+        "category": categories[pred[0]],
+        "success": True
+    }
 
 
 def main():

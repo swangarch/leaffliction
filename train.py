@@ -23,6 +23,7 @@ def parse_arg() -> argparse.Namespace:
     parser.add_argument("--saveweights", "-s", type=str, default="weights.pth")
     parser.add_argument("--learningrate", "-lr", type=float, default=0.001)
     parser.add_argument("--batchsize", "-bs", type=int, default=64)
+    parser.add_argument("--maxepoch", "-e", type=int, default=20)
     # preprocessing of dataset
     parser.add_argument("--split", "-sp", action="store_true")
     parser.add_argument("--augmentation", "-a", action="store_true")
@@ -80,7 +81,8 @@ def main():
         try:
             device = use_device(model)
             load_weights(model, args.loadweights, device)
-            train_model(model, dataloaders, device, lr=args.learningrate)
+            train_model(model, dataloaders, device, lr=args.learningrate,
+                        max_epoch=args.maxepoch)
         except KeyboardInterrupt:
             pass
         save_model(model, args.saveweights)
