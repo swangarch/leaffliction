@@ -28,6 +28,8 @@ def parse_arg() -> argparse.Namespace:
     parser.add_argument("--loadweights", "-l", type=str)
     parser.add_argument("--prediction", "-p", type=str,
                         default="predictions.csv")
+    parser.add_argument("--loadcategories", "-lc", type=str,
+                        default="categories/categories.json")
     args = parser.parse_args()
     return args
 
@@ -99,7 +101,7 @@ def predict_single_server(arr: np.array,
 def main():
     try:
         args = parse_arg()
-        categories = load_categories()
+        categories = load_categories(args.loadcategories)
         model = select_model(args.model, num_categories=len(categories))
         try:
             device = use_device(model)

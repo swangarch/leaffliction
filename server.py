@@ -15,13 +15,15 @@ def parse_args():
                         help="Path to model weights")
     parser.add_argument("--host", default="0.0.0.0")
     parser.add_argument("--port", type=int, default=8011)
+    parser.add_argument("--loadcategories", "-lc", type=str,
+                        default="categories/categories.json")
     args = parser.parse_args()
     return args
 
 
 def setup():
     args = parse_args()
-    categories = load_categories()
+    categories = load_categories(args.loadcategories)
     model = select_model(args.model, num_categories=len(categories))
     device = use_device(model)
     load_weights(model, args.loadweights, device)

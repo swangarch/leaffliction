@@ -185,6 +185,10 @@ Example:
 python server.py --host 0.0.0.0 --port 8011 --model RESNET -l weights.pth
 ```
 
+To serve the pretrained model on full plantvillage dataset with 38 categories:
+```bash
+python server.py -l weights/weights_resnet_38cat.pth -m RESNET -lc categories/categories_38.json   
+```
 To access the API service
 
 Example:
