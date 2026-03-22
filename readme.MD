@@ -16,6 +16,9 @@ The system consists of five core components:
 
 ## Setup
 
+The project can run on Linux (WSL2) or MacOS,
+If CUDA or MPS is avaliable, the it will choose automatically GPU, otherwise, choose CPU.
+
 ```bash
 bash venv.sh
 # Setup virtual environment and install dependencies
