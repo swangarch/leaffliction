@@ -19,3 +19,5 @@ Pillow==9.5.0
 uvicorn
 
 fastapi
+
+python-multipart

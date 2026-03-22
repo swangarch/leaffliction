@@ -6,6 +6,7 @@ import json
 from typing import List, Tuple
 from torch import Tensor
 from PIL import Image
+import numpy as np
 
 
 def create_transform() -> transforms.Compose:
@@ -62,6 +63,15 @@ def img_test_dataloader(path: str) -> DataLoader[Tensor]:
     img_transform = create_transform()
     img = Image.open(path).convert("RGB")
     img_tensor = img_transform(img.copy()).unsqueeze(0)
+    test_loader = DataLoader(img_tensor, batch_size=1, shuffle=False)
+    return test_loader
+
+
+def img_test_dataloader_from_numpy(img_arr: np.array) -> DataLoader[Tensor]:
+    """Create the test dataset from a single image path, Return
+    the test data loader without lable."""
+    img_transform = create_transform()
+    img_tensor = img_transform(img_arr).unsqueeze(0)
     test_loader = DataLoader(img_tensor, batch_size=1, shuffle=False)
     return test_loader
 
