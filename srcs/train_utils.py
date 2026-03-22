@@ -23,7 +23,7 @@ def training(model: nn.Module, train_loader: DataLoader,
         output = model(img)
         pred = output.argmax(dim=1, keepdim=True)
         correct_count += pred.eq(label.view_as(pred)).sum().item()
-        loss = F.cross_entropy(output, label.squeeze())
+        loss = F.cross_entropy(output, label.view(-1))
         loss_epoch += loss.item()
         loss.backward()
         optimizer.step()
@@ -46,7 +46,7 @@ def validation(model: nn.Module, val_loader: DataLoader,
             output = model(img)
             pred = output.argmax(dim=1, keepdim=True)
             correct_count += pred.eq(label.view_as(pred)).sum().item()
-            loss_val += F.cross_entropy(output, label.squeeze())
+            loss_val += F.cross_entropy(output, label.view(-1))
     loss_val /= len(val_loader)
     correct_rate = correct_count / len(val_loader.dataset)
     return float(loss_val), correct_rate
@@ -91,7 +91,8 @@ def is_early_stopped(loss_epoch: float | None, val_loss: float,
 
 def train_model(model: nn.Module, dataloaders: tuple[DataLoader, DataLoader],
                 device: str, lr: float = 0.001,
-                max_epoch: int = 20) -> nn.Module:
+                max_epoch: int = 20,
+                enable_early_stop: bool = False) -> nn.Module:
     """Perform mini training and validation phase, and collect result,
     return the model."""
     os.makedirs("visualize", exist_ok=True)
@@ -99,19 +100,24 @@ def train_model(model: nn.Module, dataloaders: tuple[DataLoader, DataLoader],
     optimizer = optim.Adam(model.parameters(), lr=lr)
     best_val_loss = None
     counter = 0
-    print("[Training started]")
+    print("[Training started] Params:")
+    print(f"lr [{lr}]  max_epoch [{max_epoch}]")
+    print(f"enable_early_stop [{enable_early_stop}]")
     records = [[], [], [], []]
     for epoch in range(max_epoch):
         t_loss, acc_t = training(model, train_loader, optimizer, device)
         val_loss, acc_val = validation(model, val_loader, device)
 
+        if enable_early_stop:
+            counter, early_stop = is_early_stopped(best_val_loss,
+                                                   val_loss, counter)
+            if early_stop:
+                break
         if best_val_loss is None or val_loss < best_val_loss:
             torch.save(model.state_dict(), "best_model.pth")
+            print("Current best model saved at best_model.pth")
             best_val_loss = val_loss
-        counter, early_stop = is_early_stopped(best_val_loss,
-                                               val_loss, counter)
-        if early_stop:
-            break
+
         record = [t_loss, val_loss, acc_t, acc_val]
         print(f"[Epoch] {epoch}  "
               f"[Train Loss] {record[0]:.4f}  "
