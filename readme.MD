@@ -150,6 +150,28 @@ leaves_test/Apple_Black_rot/image (149).JPG,Apple_Black_rot
 
 The model achieves 96–99% accuracy across all 8 classes, demonstrating both reliability and practical usability.
 
+## 6.Serve the model
+
+The project provide a API service to serve the model, with uvicorn and FastAPI
+
+Example:
+
+```bash
+python server.py --host 0.0.0.0 --port 8011 --model RESNET -l weights.pth
+```
+
+To access the API service
+
+Example:
+
+```bash
+curl -X POST http://localhost:8011/leaffliction/predict   -F "file=@grape_esca.JPG"
+```
+
+```
+{"result":{"catID":2,"category":"Apple___Cedar_apple_rust","success":true}}
+```
+
 ## Performance tracking 
 
 To evaluate the impact of different model architectures and data augmentation strategies, we first use the script split.py to divide the dataset. From approximately 7,000 samples, 800 images are extracted as the test set, while the remaining data is used for training and validation. These test samples are completely unseen during training. Accuracy and the number of correct predictions are calculated exclusively on this independent test set.
