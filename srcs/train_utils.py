@@ -79,7 +79,7 @@ def is_early_stopped(loss_epoch: float | None, val_loss: float,
     epochs, the training will stop to prevent overfitting."""
     if not loss_epoch:
         return 0, False
-    if loss_epoch and val_loss < loss_epoch - 0.001:
+    if loss_epoch and val_loss < loss_epoch:
         counter = 0
     else:
         counter += 1
@@ -104,9 +104,13 @@ def train_model(model: nn.Module, dataloaders: tuple[DataLoader, DataLoader],
     for epoch in range(max_epoch):
         t_loss, acc_t = training(model, train_loader, optimizer, device)
         val_loss, acc_val = validation(model, val_loader, device)
+
+        if best_val_loss is None or val_loss < best_val_loss:
+            torch.save(model.state_dict(), "best_model.pth")
+            best_val_loss = val_loss
         counter, early_stop = is_early_stopped(best_val_loss,
                                                val_loss, counter)
-        if early_stop is True:
+        if early_stop:
             break
         record = [t_loss, val_loss, acc_t, acc_val]
         print(f"[Epoch] {epoch}  "
@@ -115,10 +119,6 @@ def train_model(model: nn.Module, dataloaders: tuple[DataLoader, DataLoader],
               f"[Val Loss] {record[1]:.4f}  "
               f"[Val Acc]: ({(record[3] * 100):.0f}%)")
         append_records(records, record)
-        if best_val_loss and val_loss < best_val_loss:
-            torch.save(model.state_dict(), "best_model.pth")
-        best_val_loss = min(val_loss,
-                            best_val_loss) if best_val_loss else val_loss
     print("[Training done.]")
     show_records(records)
     return model
