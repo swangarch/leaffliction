@@ -161,9 +161,14 @@ def show_records(records: list[list[float]]) -> None:
 
 
 def use_device(model: nn.Module) -> str:
-    """Check if CUDA is available, if available use GPU, otherwise use CPU."""
-    print(f"[CUDA => ({torch.cuda.is_available()})]")
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    """Check if GPU is available, if available use GPU, otherwise use CPU."""
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+    elif torch.backends.mps.is_available():
+        device = torch.device("mps")
+    else:
+        device = torch.device("cpu")
+    print(f"[Use device => ({device})]")
     model.to(device)
     return device
 
