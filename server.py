@@ -1,10 +1,13 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from predict import predict_single_server
 from srcs import select_model, use_device, load_weights, load_categories
 import argparse
 import numpy as np
 from PIL import Image
 import uvicorn
+import os
 
 
 def parse_args():
@@ -31,6 +34,24 @@ def setup():
 
 
 app = FastAPI()
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], 
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.get("/leaffliction")
+def get_ui():
+    html_path = os.path.join(os.path.dirname(__file__), "index.html")
+    if not os.path.exists(html_path):
+        raise HTTPException(status_code=404, detail="index.html file not found in server directory")
+
+    return FileResponse(html_path)
 
 
 @app.post("/leaffliction/predict")
