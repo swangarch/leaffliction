@@ -177,7 +177,7 @@ The model achieves 96–99% accuracy across all 8 classes, demonstrating both re
 
 ## 6.Serve the model
 
-The project provide a API service to serve the model, with uvicorn and FastAPI
+The project provide a API service and a UI to serve the model, with uvicorn and FastAPI
 
 Example:
 
@@ -199,6 +199,10 @@ curl -X POST http://localhost:8011/leaffliction/predict   -F "file=@grape_esca.J
 
 ```
 {"result":{"catID":2,"category":"Apple___Cedar_apple_rust","success":true}}
+```
+To access the UI from a browser
+```bash
+http://localhost:8011/leaffliction
 ```
 
 ## Performance tracking 
