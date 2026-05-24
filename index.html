@@ -13,7 +13,7 @@
         }
 
         body {
-            background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), 
+            background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
                         url('https://images.unsplash.com/photo-1545241047-6083a3684587?q=80&w=1920') no-repeat center center fixed;
             background-size: cover;
             min-height: 100vh;
@@ -21,6 +21,7 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
+            position: relative;
         }
 
         .dashboard-card {
@@ -35,6 +36,7 @@
             text-align: center;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
             color: #ffffff;
+            margin-bottom: 40px;
         }
 
         h1 {
@@ -75,6 +77,7 @@
             display: none;
         }
 
+        /* Responsive Pop-up Overlay styles */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -92,10 +95,13 @@
         .modal-window {
             background: #ffffff;
             color: #2c3e50;
-            padding: 30px;
+            padding: 35px;
             border-radius: 16px;
             width: 90%;
-            max-width: 400px;
+            max-width: 450px;
+            height: auto;
+            max-height: 85vh;
+            overflow-y: auto;
             box-shadow: 0 20px 40px rgba(0,0,0,0.4);
             text-align: center;
             transform: scale(0.8);
@@ -122,8 +128,20 @@
             background: #f1f8e9;
             padding: 12px;
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             border-left: 5px solid #4caf50;
+        }
+
+        .advice-text {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #555555;
+            margin-bottom: 25px;
+            text-align: left;
+            background: #fcfcfc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #eee;
         }
 
         .close-btn {
@@ -142,7 +160,7 @@
             background: #1b5e20;
         }
 
-		.footer-credits {
+        .footer-credits {
             position: absolute;
             bottom: 20px;
             font-size: 0.85rem;
@@ -161,9 +179,9 @@
 <body>
 
     <div class="dashboard-card">
-        <h1>leaffliction</h1>
-        <p class="welcome-msg">Welcome! Upload a photo of your plant's leaf below to instantly diagnose its current health state using our trained CNN engine.</p>
-        
+        <h1>Leaffliction</h1>
+        <p class="welcome-msg">Welcome! Upload a photo of your plant's leaf below to instantly diagnose its current health state and get possible treatment tips using our trained ResNet engine.</p>
+
         <div class="upload-box" onclick="document.getElementById('hidden-file-input').click()">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: #a5d6a7;"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 2 2 4a7 7 0 0 1-10 14z"></path><path d="M19 2c-2.26 4.33-5.27 7.14-8 10"></path></svg>
             <p id="upload-status-text">Click to upload a photo</p>
@@ -171,62 +189,84 @@
         <input type="file" id="hidden-file-input" accept="image/jpeg, image/png" capture="environment">
     </div>
 
-	<div class="footer-credits">
+    <div class="footer-credits">
         Created with ❤️ by Charlotte Xu & Shuai Wang
     </div>
+
     <div class="modal-overlay" id="resultModal">
         <div class="modal-window">
             <h3>Analysis Complete</h3>
-            <p style="font-size: 0.9rem; color: #7f8c8d; margin-bottom: 8px;">Detected State / Category:</p>
-            <div class="prediction-text" id="predictionValue">Healthy Leaf</div>
+            <p style="font-size: 0.9rem; color: #7f8c8d; margin-bottom: 8px;">Detected State / Condition:</p>
+            <div class="prediction-text" id="predictionValue">Loading...</div>
+            <div class="advice-text" id="adviceValue">Loading treatment steps...</div>
             <button class="close-btn" onclick="closeModal()">Dismiss</button>
         </div>
     </div>
 
     <script>
+        let categoryMap = {};
         const fileInput = document.getElementById('hidden-file-input');
         const statusText = document.getElementById('upload-status-text');
         const modal = document.getElementById('resultModal');
         const predictionValue = document.getElementById('predictionValue');
+        const adviceValue = document.getElementById('adviceValue');
+
+        async function loadDiagnosticDatabase() {
+            try {
+                const response = await fetch('/categories_mapped.json');
+                if (!response.ok) throw new Error("Could not fetch map from server.");
+                categoryMap = await response.json();
+            } catch (e) {
+                console.error("Error loading category database:", e);
+            }
+        }
 
         fileInput.addEventListener('change', async (e) => {
             if (e.target.files.length === 0) return;
-            
+
             const file = e.target.files[0];
             statusText.innerText = "Processing framework data...";
-            
+
             const formData = new FormData();
             formData.append('file', file);
 
             try {
-                const response = await fetch('http://localhost:8011/leaffliction/predict', {
+                const response = await fetch('/leaffliction/predict', {
                     method: 'POST',
                     body: formData
                 });
 
-                if (!response.ok) {
-                    throw new Error(`Server returned status code: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`Server status: ${response.status}`);
 
                 const data = await response.json();
-                
-                showModal(data.result.category);
+                const rawCategory = data.result.category;
+
+                const mappedResult = categoryMap[rawCategory] || {
+                    title: rawCategory,
+                    advice: "Diagnostic received successfully. Monitor leaf irrigation and watch for additional symptoms."
+                };
+
+                showModal(mappedResult.title, mappedResult.advice);
+
             } catch (error) {
                 alert(`Inference failed: ${error.message}`);
             } finally {
-                statusText.innerText = "Click to upload a photo";
+                statusText.innerText = "Click to upload photo";
                 fileInput.value = "";
             }
         });
 
-        function showModal(resultText) {
-            predictionValue.innerText = resultText;
+        function showModal(titleText, adviceText) {
+            predictionValue.innerText = titleText;
+            adviceValue.innerText = adviceText;
             modal.classList.add('active');
         }
 
         function closeModal() {
             modal.classList.remove('active');
         }
+
+        loadDiagnosticDatabase();
     </script>
 </body>
 </html>

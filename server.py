@@ -54,6 +54,14 @@ def get_ui():
     return FileResponse(html_path)
 
 
+@app.get("/categories_mapped.json")
+def get_mapped_categories():
+    json_path = os.path.join(os.path.dirname(__file__), "categories_mapped.json")
+    if not os.path.exists(json_path):
+        raise HTTPException(status_code=404, detail="categories_mapped.json not found next to server.py")
+    return FileResponse(json_path)
+
+
 @app.post("/leaffliction/predict")
 def run_perdiction(file: UploadFile = File(...)):
     if file.content_type not in ["image/jpeg", "image/png"]:
