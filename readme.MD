@@ -205,6 +205,9 @@ To access the UI from a browser
 http://localhost:8011/leaffliction
 ```
 
+![Page](./visualize/Index.png)
+![Page](./visualize/Result.png)
+
 ## Performance tracking 
 
 To evaluate the impact of different model architectures and data augmentation strategies, we first use the script split.py to divide the dataset. From approximately 7,000 samples, 800 images are extracted as the test set, while the remaining data is used for training and validation. These test samples are completely unseen during training. Accuracy and the number of correct predictions are calculated exclusively on this independent test set.
