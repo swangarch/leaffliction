@@ -6,7 +6,6 @@ from srcs import (select_model,
                   batch_test_dataloader,
                   test,
                   img_test_dataloader,
-                  img_test_dataloader_from_numpy,
                   img_detect_leaf,
                   show_image,
                   load_categories
@@ -15,7 +14,6 @@ import argparse
 import csv
 import os
 import matplotlib.pyplot as plt
-import numpy as np
 from typing import List
 from torch import nn
 
@@ -28,8 +26,6 @@ def parse_arg() -> argparse.Namespace:
     parser.add_argument("--loadweights", "-l", type=str)
     parser.add_argument("--prediction", "-p", type=str,
                         default="predictions.csv")
-    parser.add_argument("--loadcategories", "-lc", type=str,
-                        default="categories/categories.json")
     args = parser.parse_args()
     return args
 
@@ -77,31 +73,12 @@ def predict_single(args: argparse.Namespace, model: nn.Module,
     img1 = plt.imread(args.path)
     img2 = img_detect_leaf(img1)
     show_image(img1, img2, categories[pred[0]])
-    return {
-        "catID": pred[0],
-        "category": categories[pred[0]],
-        "success": True
-    }
-
-
-def predict_single_server(arr: np.array,
-                          model: nn.Module,
-                          device: str,
-                          categories: List[str]) -> None:
-    """Generate prediction on 1 single image, and return it's label."""
-    dataloaders = img_test_dataloader_from_numpy(arr)
-    pred = test(model, dataloaders, device)
-    return {
-        "catID": pred[0],
-        "category": categories[pred[0]],
-        "success": True
-    }
 
 
 def main():
     try:
         args = parse_arg()
-        categories = load_categories(args.loadcategories)
+        categories = load_categories()
         model = select_model(args.model, num_categories=len(categories))
         try:
             device = use_device(model)

@@ -14,10 +14,4 @@ torch==2.9.0
 
 torchvision==0.24.0
 
-Pillow
-
-uvicorn
-
-fastapi
-
-python-multipart
+Pillow==9.5.0

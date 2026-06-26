@@ -2,7 +2,6 @@ from srcs.data_loader import (
                                 create_dataloader,
                                 batch_test_dataloader,
                                 img_test_dataloader,
-                                img_test_dataloader_from_numpy,
                                 load_categories)
 from srcs.train_utils import (
                                 select_model,
@@ -33,7 +32,6 @@ __all__ = ["select_model", "use_device",
            "save_model", "test",
            "batch_test_dataloader", "create_dataloader",
            "img_test_dataloader", "load_categories",
-           "img_test_dataloader_from_numpy",
            "CNN", "RESNET",
            "img_detect_leaf", "show_image",
            "blur_img", "hue_mask",
