@@ -1,2 +1,0 @@
-setup:
-	bash venv.sh

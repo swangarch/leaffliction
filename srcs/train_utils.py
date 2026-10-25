@@ -7,9 +7,12 @@ import os
 from torch.utils.data import DataLoader
 from torch.optim import Optimizer
 from typing import List
+from pathlib import Path
 from .model import CNN, RESNET
+from .visualization import show_segmentaion
 
 
+# For classification task ==================================================
 def training(model: nn.Module, train_loader: DataLoader,
              optimizer: Optimizer, device: str) -> tuple[float, float]:
     """Perform training phase, including feedforward, backpropagation,
@@ -208,3 +211,69 @@ def load_weights(model: nn.Module, weights_path: str, device: str) -> None:
     except Exception as e:
         raise ValueError("""Cannot load weights,
                          please make sure weights match network""") from e
+
+
+# For segmentation task ==================================================
+def training_segmentation(train_loader: DataLoader, valid_loader: DataLoader, device: str | torch.device,
+            model: nn.Module, optimizer: Optimizer, 
+            loss_func: nn.Module, save_path: str) -> None:
+    model = model.to(device)
+    train_num_samples = len(train_loader)
+    valid_num_samples = len(valid_loader)
+    train_losses = []
+    valid_losses = []
+    for epoch in range(10):
+        train_loss = 0
+        model.train()
+        for image, label in train_loader:
+            image = image.to(device)
+            label = label.to(device)
+            optimizer.zero_grad()
+            predict = model(image)
+            loss = loss_func(predict, label)
+            train_loss += loss.item()
+            loss.backward()
+            optimizer.step()
+        train_loss = train_loss / train_num_samples
+        train_losses.append(train_loss)
+
+        model.eval()
+        with torch.no_grad():
+            valid_loss = 0
+            for image, label in valid_loader:
+                image = image.to(device)
+                label = label.to(device)
+                predict = model(image)
+                loss = loss_func(predict, label)
+                valid_loss += loss.item()
+        valid_loss = valid_loss / valid_num_samples
+        valid_losses.append(valid_loss)
+
+        print(f"Epoch: {epoch} | train loss {train_loss:.4f} | valid loss {valid_loss:.4f}")
+
+    torch.save(model.state_dict(), save_path)
+    print(f"Model saved at {save_path}")
+    plt.title(f"{save_path} training curve")
+    plt.plot(train_losses, label="Train loss")
+    plt.plot(valid_losses, label="Valid loss")
+    plt.legend()
+    plt.savefig(f"{Path(save_path).stem}_training_curve.png")
+    plt.close()
+
+
+def inference_segmentation(test_loader: DataLoader, model_leaf: nn.Module, model_disease: nn.Module) -> None:
+    model_leaf.eval()
+    model_disease.eval()
+    os.makedirs("output", exist_ok=True)
+    id = 0
+    with torch.no_grad():
+        for image, mask in test_loader:
+            image = image.to("cpu")
+            mask = mask.to("cpu")
+            pred_leaf = (model_leaf(image).sigmoid() > 0.5).float()
+            pred_disease = (model_disease(image).sigmoid() > 0.5).float()
+            for idx_in_batch in range(len(pred_leaf)):
+                show_segmentaion(image[idx_in_batch], pred_leaf[idx_in_batch],
+                                 pred_disease[idx_in_batch], id)
+                print(f"ID: {id} is processed")
+                id += 1

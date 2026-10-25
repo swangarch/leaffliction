@@ -86,15 +86,41 @@ def predict_single(args: argparse.Namespace, model: nn.Module,
 
 def predict_single_server(arr: np.array,
                           model: nn.Module,
+                          model_leaf: nn.Module,
+                          model_disease: nn.Module,
                           device: str,
-                          categories: List[str]) -> None:
-    """Generate prediction on 1 single image, and return it's label."""
+                          categories: List[str]) -> dict:
+    """Return the category and original-size integer leaf/disease masks."""
+    import torch
+    from PIL import Image
+    from torchvision.transforms.functional import to_tensor
+
     dataloaders = img_test_dataloader_from_numpy(arr)
     pred = test(model, dataloaders, device)
+    image = Image.fromarray(arr).convert("RGB")
+    tensor = to_tensor(image.resize((256, 256))).unsqueeze(0).to(device)
+    masks = []
+    with torch.no_grad():
+        for segmentation_model in (model_leaf, model_disease):
+            segmentation_model.to(device)
+            segmentation_model.eval()
+            mask = (segmentation_model(tensor).sigmoid() > 0.5)
+            mask = mask[0, 0].to(torch.uint8).cpu().numpy() * 255
+            mask = Image.fromarray(mask).resize(
+                image.size, Image.Resampling.NEAREST)
+            masks.append(np.asarray(mask, dtype=np.uint8).tolist())
+    leaf_pixels = np.asarray(masks[0], dtype=np.uint8) > 0
+    disease_pixels = np.asarray(masks[1], dtype=np.uint8) > 0
+    leaf_area = int(np.count_nonzero(leaf_pixels))
+    disease_area = int(np.count_nonzero(leaf_pixels & disease_pixels))
+    disease_ratio = 100.0 * disease_area / leaf_area if leaf_area else None
     return {
         "catID": pred[0],
         "category": categories[pred[0]],
-        "success": True
+        "success": True,
+        "leaf_mask": masks[0],
+        "disease_mask": masks[1],
+        "disease_ratio": disease_ratio
     }
 
 

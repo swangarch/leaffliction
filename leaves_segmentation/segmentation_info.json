@@ -1,0 +1,10 @@
+{
+  "version": "color-grabcut-shadow-v2",
+  "leaf_values": [
+    0,
+    255
+  ],
+  "leaf_semantics": "white leaf, black background; exterior shadow suppression",
+  "status": "automatic_preannotations_need_review",
+  "source": "/Users/wang/PROJECT/42/semantic-segmentation/leaves_copy"
+}

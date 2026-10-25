@@ -6,13 +6,14 @@
 The project is structured as a tightly integrated pipeline—each module naturally builds upon the previous one, forming a coherent workflow.
 It leverages libraries such as OpenCV, PlantCV, and PyTorch to create a practical, fully functional solution.
 
-The system consists of five core components:
+The system consists of six core components:
 
 - Dataset distribution analysis
 - Data augmentation and class balancing
 - Image transformations and feature exploration
 - Model training (CNN and ResNet-based CNN)
 - Image prediction (single or batch)
+- Semantic segmentation of leaves and diseased regions
 
 ## Setup
 
@@ -20,11 +21,8 @@ The project can run on Linux (WSL2) or MacOS,
 If CUDA or MPS is avaliable, the it will choose automatically GPU, otherwise, choose CPU.
 
 ```bash
-bash venv.sh
-# Setup virtual environment and install dependencies
-
-source venv/bin/activate
-# Activate virtual environment
+uv sync
+# Create .venv with Python 3.12 and install dependencies
 ```
 
 ## Dataset
@@ -63,8 +61,8 @@ This module analyzes the dataset by scanning subdirectories, counts images per c
 
 Labels are derived automatically from folder names.
 
-```python
-python Distribution.py leaves
+```bash
+uv run python Distribution.py leaves
 ```
 
 We observe that initial distribution results reveal significant class imbalance..
@@ -84,8 +82,8 @@ Six augmentation operations are provided:
  - Crop
  - Distortion
 
-```python
-python Augmentation.py leaves
+```bash
+uv run python Augmentation.py leaves
 ```
 After augmentation, the dataset becomes balanced and ready for model training.
 
@@ -107,8 +105,8 @@ Included transformations:
 - Segmentation
 
 
-```python
-python Transformation.py path 
+```bash
+uv run python Transformation.py path
 ```
 
 ![Transformation](./visualize/Transformation.png)
@@ -127,9 +125,9 @@ The project supports multiple model architectures for comparing their performanc
 If -sp not provided, training dataset and validation dataset need to be set as arguments.
 
 ```bash
-python train.py leaves -m CNN -sp -a
+uv run python train.py leaves -m CNN -sp -a
 # or
-python train.py leaves -m RESNET -sp -a
+uv run python train.py leaves -m RESNET -sp -a
 ```
 
 
@@ -147,7 +145,7 @@ This module:
 ## 5.Predict
 
 ```bash
-python predict.py path -l weights.pth
+uv run python predict.py path -l weights.pth
 ```
 
 -m to spicify the model.
@@ -158,7 +156,6 @@ When the provided path points to a single image, the prediction module automatic
 
 ![prediction](./visualize/Prediction1.png)
 ![prediction](./visualize/Prediction2.png)
-![prediction](./visualize/Prediction3.png)
 
 ### Batch prediction example
 
@@ -175,19 +172,49 @@ leaves_test/Apple_Black_rot/image (149).JPG,Apple_Black_rot
 
 The model achieves 96–99% accuracy across all 8 classes, demonstrating both reliability and practical usability.
 
-## 6.Serve the model
+## 6.Semantic Segmentation
+
+This module uses **U-Net with a ResNet18 encoder** to generate pixel-level masks for leaves and diseased regions.
+Two models are trained separately, one to extract the leaf from the background, and the other to locate the affected areas.
+
+Each image needs two corresponding masks:
+
+- `image (1)_leaf_mask.png`
+- `image (1)_disease_mask.png`
+
+Images and masks are stored together inside each category folder. Training currently reads from `leaves/`, while inference reads from `leaves_segmentation/`.
+
+To train both models:
+
+```bash
+uv run python semantic_segmentation.py --train
+```
+
+The trained weights are saved as `weights/weights_leaf.pth` and `weights/weights_disease.pth`.
+
+To generate segmentation results using these weights:
+
+```bash
+uv run python semantic_segmentation.py
+```
+
+This module saves the original image, leaf mask, extracted leaf and disease overlays to `output/`. It also calculates the predicted disease area as a percentage of the predicted leaf area.
+
+![Semantic segmentation](./visualize/Semantic_segmentation.png)
+
+## 7.Serve the model
 
 The project provide a API service and a UI to serve the model, with uvicorn and FastAPI
 
 Example:
 
 ```bash
-python server.py --host 0.0.0.0 --port 8011 --model RESNET -l weights.pth
+uv run python server.py --host 0.0.0.0 --port 8011 --model RESNET -l weights.pth
 ```
 
 To serve the pretrained model on full plantvillage dataset with 38 categories:
 ```bash
-python server.py -l weights/weights_resnet_38cat.pth -m RESNET -lc categories/categories_38.json   
+uv run python server.py -l weights/weights_resnet_38cat.pth -m RESNET -lc categories/categories_38.json
 ```
 To access the API service
 
@@ -213,7 +240,7 @@ http://localhost:8011/leaffliction
 To evaluate the impact of different model architectures and data augmentation strategies, we first use the script split.py to divide the dataset. From approximately 7,000 samples, 800 images are extracted as the test set, while the remaining data is used for training and validation. These test samples are completely unseen during training. Accuracy and the number of correct predictions are calculated exclusively on this independent test set.
 
 ```bash
-python srcs/split.py leaves
+uv run python srcs/split.py leaves
 ```
 
 Next, we optionally apply data augmentation using Augmentation.py.
@@ -222,15 +249,15 @@ For each configuration, the model is trained and evaluated three times to obtain
 Training and predicting with the CNN model
 
 ```bash
-python train.py leaves
-python predict.py leaves_test/ -l weights.pth
+uv run python train.py leaves
+uv run python predict.py leaves_test/ -l weights.pth
 ```
 
 Training and predicting with the CNN-ResNet model
 
 ```bash
-python train.py leaves -m RESNET
-python predict.py leaves_test/ -l weights.pth -m RESNET
+uv run python train.py leaves -m RESNET
+uv run python predict.py leaves_test/ -l weights.pth -m RESNET
 ```
 
 

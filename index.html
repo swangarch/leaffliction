@@ -3,270 +3,274 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaffliction Dashboard</title>
+    <meta name="theme-color" content="#183d32">
+    <title>Leaffliction · Leaf analysis</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
-                        url('https://images.unsplash.com/photo-1545241047-6083a3684587?q=80&w=1920') no-repeat center center fixed;
-            background-size: cover;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            position: relative;
-        }
-
-        .dashboard-card {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            padding: 40px;
-            border-radius: 20px;
-            width: 100%;
-            max-width: 500px;
-            text-align: center;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-            color: #ffffff;
-            margin-bottom: 40px;
-        }
-
-        h1 {
-            font-size: 2.2rem;
-            margin-bottom: 10px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .welcome-msg {
-            font-size: 1rem;
-            color: #e0eae0;
-            margin-bottom: 30px;
-            line-height: 1.5;
-        }
-
-        .upload-box {
-            border: 2px dashed rgba(255, 255, 255, 0.4);
-            padding: 30px 20px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .upload-box:hover {
-            border-color: #81c784;
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .upload-box p {
-            margin-top: 10px;
-            font-size: 0.95rem;
-        }
-
-        #hidden-file-input {
-            display: none;
-        }
-
-        /* Responsive Pop-up Overlay styles */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal-window {
-            background: #ffffff;
-            color: #2c3e50;
-            padding: 35px;
-            border-radius: 16px;
-            width: 90%;
-            max-width: 450px;
-            height: auto;
-            max-height: 85vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            text-align: center;
-            transform: scale(0.8);
-            transition: transform 0.3s ease;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal-overlay.active .modal-window {
-            transform: scale(1);
-        }
-
-        .modal-window h3 {
-            color: #2e7d32;
-            font-size: 1.4rem;
-            margin-bottom: 15px;
-        }
-
-        .prediction-text {
-            font-size: 1.2rem;
-            font-weight: 600;
-            background: #f1f8e9;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border-left: 5px solid #4caf50;
-        }
-
-        .advice-text {
-            font-size: 0.95rem;
-            line-height: 1.6;
-            color: #555555;
-            margin-bottom: 25px;
-            text-align: left;
-            background: #fcfcfc;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #eee;
-        }
-
-        .close-btn {
-            background: #2e7d32;
-            color: white;
-            border: none;
-            padding: 10px 24px;
-            font-size: 0.95rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background 0.2s;
-        }
-
-        .close-btn:hover {
-            background: #1b5e20;
-        }
-
-        .footer-credits {
-            position: absolute;
-            bottom: 20px;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
-            color: rgba(255, 255, 255, 0.7);
-            background: rgba(0, 0, 0, 0.2);
-            padding: 6px 16px;
-            border-radius: 20px;
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            pointer-events: none;
-        }
+        :root { --ink:#ffffff; --muted:#d3dfd5; --line:rgba(255,255,255,.2); }
+        * { box-sizing:border-box; }
+        body { margin:0; min-height:100vh; color:var(--ink); font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; background:linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)),url('https://images.unsplash.com/photo-1545241047-6083a3684587?q=80&w=1920') no-repeat center center fixed; background-size:cover; }
+        button,input { font:inherit; }
+        button { cursor:pointer; }
+        svg { width:24px; height:24px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+        .icon-library { display:none; }
+        .shell { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 20px 85px; }
+        .hero { width:100%; max-width:500px; padding:40px; border-radius:20px; background:rgba(255,255,255,.15); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,.25); text-align:center; box-shadow:0 15px 35px rgba(0,0,0,.3); }
+        h1 { font-size:2.2rem; font-weight:600; letter-spacing:1px; margin:0 0 10px; text-shadow:0 2px 4px rgba(0,0,0,.2); }
+        .intro { margin:0 0 30px; color:#e0eae0; font-size:15px; line-height:1.6; }
+        .upload-box { width:100%; display:flex; flex-direction:column; align-items:center; border:2px dashed rgba(255,255,255,.4); padding:30px 16px; border-radius:12px; background:rgba(255,255,255,.05); color:white; transition:background .2s,border-color .2s; }
+        .upload-box:hover,.upload-box.dragging { background:rgba(255,255,255,.1); border-color:#81c784; }
+        .upload-box:disabled { cursor:wait; opacity:.65; }
+        .upload-icon { color:#a5d6a7; margin-bottom:12px; }
+        .upload-icon svg { width:48px; height:48px; }
+        .upload-title { font-size:15px; margin-bottom:8px; }
+        .upload-sub { font-size:12px; color:var(--muted); line-height:1.6; }
+        #hidden-file-input { display:none; }
+        .error { color:#ffb9ad; padding-top:12px; font-size:13px; line-height:1.6; margin:0; }
+        .error:empty { display:none; }
+        .credits { position:fixed; bottom:20px; padding:7px 16px; font-size:12px; color:rgba(255,255,255,.8); background:rgba(0,0,0,.2); border:1px solid rgba(255,255,255,.08); border-radius:20px; backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); text-align:center; }
+        .modal-overlay { position:fixed; inset:0; z-index:10; background:rgba(0,0,0,.45); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); padding:28px; display:none; align-items:center; justify-content:center; }
+        .modal-overlay.active { display:flex; }
+        .modal-window { --ink:#294234; --muted:#617564; --line:rgba(66,100,69,.16); width:min(1170px,100%); max-height:calc(100dvh - 56px); overflow-y:auto; color:var(--ink); background:rgba(245,250,242,.93); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,.25); border-radius:20px; box-shadow:0 20px 60px rgba(0,0,0,.4); }
+        .analysis-header { padding:23px 29px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; gap:16px; }
+        .analysis-header h2 { font-size:24px; font-weight:600; margin:0; }
+        .header-actions { display:flex; gap:16px; align-items:center; }
+        .file-name { font-size:12px; color:var(--muted); max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .icon-button { display:grid; place-items:center; width:34px; height:34px; background:rgba(255,255,255,.6); color:var(--ink); border:1px solid var(--line); border-radius:50%; }
+        .icon-button:hover { background:#e3eedf; }
+        .icon-button svg { width:17px; height:17px; }
+        .analysis-body { display:grid; grid-template-columns:minmax(0,.85fr) minmax(0,.85fr) minmax(280px,1fr); gap:14px; padding:25px; }
+        .visual-panel { display:contents; }
+        .visual-panel > .section-label { grid-column:1 / 3; grid-row:1; margin:0; }
+        .section-label { font-size:12px; font-weight:600; color:var(--muted); margin-bottom:15px; }
+        .image-grid { display:contents; }
+        .image-card:nth-child(1) { grid-column:1; grid-row:2; }
+        .image-card:nth-child(2) { grid-column:2; grid-row:2; }
+        .image-card:nth-child(3) { grid-column:1; grid-row:3; }
+        .image-card:nth-child(4) { grid-column:2; grid-row:3; }
+        .image-card { align-self:start; margin:0; background:rgba(255,255,255,.75); border:1px solid var(--line); border-radius:11px; overflow:hidden; }
+        .canvas-wrap { background:#fff; }
+        .canvas-wrap canvas { width:100%; height:auto; display:block; }
+        figcaption { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:11px 12px; font-size:11px; }
+        figcaption .number { font-size:10px; color:#7d907c; font-variant-numeric:tabular-nums; }
+        .legend { grid-column:1 / 3; grid-row:4; display:flex; flex-wrap:wrap; gap:18px; font-size:11px; line-height:16px; color:var(--muted); }
+        .legend span { display:flex; align-items:center; gap:6px; }
+        .swatch { width:8px; height:8px; background:#65ad73; border-radius:2px; }
+        .swatch.disease { background:#e26659; }
+        .summary { display:contents; }
+        .condition-details { grid-column:3; grid-row:1 / 3; min-width:0; margin-left:12px; display:flex; flex-direction:column; }
+        .health-panel { grid-column:3; grid-row:3; min-width:0; margin-left:12px; display:flex; flex-direction:column; }
+        .condition-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:17px; }
+        .condition-top .section-label { margin:0; }
+        .status-icon { width:34px; height:34px; display:grid; place-items:center; border-radius:50%; color:var(--severity-color,#35865a); background:color-mix(in srgb,var(--severity-color,#35865a) 10%,white); }
+        .status-icon svg { width:20px; height:20px; }
+        .prediction-text { font-size:25px; font-weight:600; line-height:1.3; overflow-wrap:anywhere; margin-bottom:10px; }
+        .raw-category { font-size:11px; color:var(--muted); line-height:1.6; overflow-wrap:anywhere; }
+        .advice-section { margin:20px 0 0; flex:1; padding:17px; border:1px solid var(--line); border-radius:12px; background:rgba(255,255,255,.75); }
+        .advice-section .section-label { margin-bottom:10px; }
+        .advice-text { font-size:13px; color:#50654f; line-height:1.8; white-space:pre-line; }
+        .health-card { margin:0 0 20px; background:rgba(255,255,255,.75); border:1px solid var(--line); border-radius:12px; padding:19px; }
+        .health-heading { display:flex; justify-content:space-between; align-items:center; font-size:13px; font-weight:600; }
+        .health-heading svg { color:var(--severity-color,#35865a); width:18px; height:18px; }
+        .health-value { display:flex; align-items:baseline; gap:4px; margin:12px 0 19px; }
+        .health-value strong { font-size:44px; font-weight:500; line-height:1; color:var(--severity-color,#35865a); font-variant-numeric:tabular-nums; }
+        .health-value span { color:var(--muted); font-size:15px; }
+        .health-track { height:9px; position:relative; background:linear-gradient(to right,#df6153 0%,#e9954e 25%,#e2c95e 50%,#4eaa70 100%); border-radius:10px; }
+        .health-marker { position:absolute; left:100%; top:50%; transform:translate(-50%,-50%); width:5px; height:19px; border-radius:3px; background:#183d32; box-shadow:0 0 0 2px white; }
+        .health-scale { display:flex; justify-content:space-between; font-size:10px; color:var(--muted); margin-top:9px; }
+        .disease-stat { display:flex; align-items:center; justify-content:space-between; margin-top:18px; padding-top:13px; border-top:1px solid var(--line); font-size:12px; color:var(--muted); }
+        .disease-stat strong { color:var(--ink); font-size:14px; font-weight:600; }
+        .health-note { font-size:10px; color:var(--muted); line-height:1.6; margin:10px 0 0; }
+        .close-btn { margin-top:auto; align-self:flex-end; border:1px solid rgba(255,255,255,.2); background:#2e7d32; color:white; padding:10px 16px; border-radius:7px; font-size:12px; }
+        .close-btn:hover { background:#256829; }
+        button:focus-visible { outline:3px solid #a5d6a7; outline-offset:4px; }
+        @media(max-width:850px) { .analysis-body { grid-template-columns:minmax(0,.65fr) minmax(0,.65fr) minmax(250px,1fr); padding:18px; } .condition-details,.health-panel { margin-left:4px; } .file-name { display:none; } .prediction-text { font-size:23px; } }
+        @media(max-width:620px) { .hero { padding:30px 24px; } h1 { font-size:2rem; } .credits { font-size:10px; } .modal-overlay { padding:10px; } .modal-window { max-height:calc(100dvh - 20px); border-radius:15px; } .analysis-header { padding:18px; } .analysis-header h2 { font-size:21px; } .analysis-body { display:block; padding:18px; } .visual-panel,.summary { display:block; } .visual-panel > .section-label { margin-bottom:14px; } .image-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; } .image-card:nth-child(n) { grid-column:auto; grid-row:auto; } .legend { margin-top:14px; } .condition-details { margin:24px 0 18px; } .health-panel { margin:0; } figcaption { font-size:10px; padding:10px; } .advice-section { margin-top:18px; } }
     </style>
 </head>
 <body>
-
-    <div class="dashboard-card">
-        <h1>Leaffliction</h1>
-        <p class="welcome-msg">Welcome! Upload a photo of your plant's leaf below to instantly diagnose its current health state and get possible treatment tips using our trained ResNet engine.</p>
-
-        <div class="upload-box" onclick="document.getElementById('hidden-file-input').click()">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: #a5d6a7;"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 2 2 4a7 7 0 0 1-10 14z"></path><path d="M19 2c-2.26 4.33-5.27 7.14-8 10"></path></svg>
-            <p id="upload-status-text">Click to upload a photo</p>
-        </div>
-        <input type="file" id="hidden-file-input" accept="image/jpeg, image/png" capture="environment">
+    <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+        <symbol id="icon-leaf" viewBox="0 0 24 24"><path d="M20 3c-6 0-14 1-14 9a6 6 0 0 0 10 4c4-4 4-9 4-13Z"/><path d="M4 21 15 10"/></symbol>
+        <symbol id="icon-upload" viewBox="0 0 24 24"><path d="M12 16V4m-4 4 4-4 4 4M4 16v4h16v-4"/></symbol>
+        <symbol id="icon-scan" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5M4 12h16"/></symbol>
+        <symbol id="icon-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></symbol>
+        <symbol id="icon-warning" viewBox="0 0 24 24"><path d="m12 3 10 18H2L12 3Z"/><path d="M12 9v5m0 3h.01"/></symbol>
+        <symbol id="icon-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+        <symbol id="icon-pulse" viewBox="0 0 24 24"><path d="M2 12h5l3-7 4 14 3-7h5"/></symbol>
+    </defs></svg>
+    <div class="shell">
+        <main class="hero">
+            <h1>Leaffliction</h1>
+            <p class="intro">Upload a leaf photo to identify its condition, view segmentation masks, and measure the affected area.</p>
+            <section class="upload-card"><button type="button" class="upload-box" id="upload-button"><span class="upload-icon"><svg><use href="#icon-leaf"/></svg></span><span class="upload-title" id="upload-status-text" role="status" aria-live="polite">Upload a leaf photo</span><span class="upload-sub">Drop a JPG or PNG here, or click to choose</span></button><input type="file" id="hidden-file-input" accept="image/jpeg,image/png"><p class="error" id="upload-error" role="alert"></p></section>
+        </main>
+        <footer class="credits">Created with ❤️ by Charlotte Xu & Shuai Wang</footer>
     </div>
-
-    <div class="footer-credits">
-        Created with ❤️ by Charlotte Xu & Shuai Wang
-    </div>
-
     <div class="modal-overlay" id="resultModal">
-        <div class="modal-window">
-            <h3>Analysis Complete</h3>
-            <p style="font-size: 0.9rem; color: #7f8c8d; margin-bottom: 8px;">Detected State / Condition:</p>
-            <div class="prediction-text" id="predictionValue">Loading...</div>
-            <div class="advice-text" id="adviceValue">Loading treatment steps...</div>
-            <button class="close-btn" onclick="closeModal()">Dismiss</button>
-        </div>
+        <section class="modal-window" role="dialog" aria-modal="true" aria-labelledby="analysis-title" tabindex="-1">
+            <header class="analysis-header"><div><h2 id="analysis-title">Analysis results</h2></div><div class="header-actions"><span class="file-name" id="file-name"></span><button class="icon-button" type="button" aria-label="Close analysis" onclick="closeModal()"><svg><use href="#icon-close"/></svg></button></div></header>
+            <div class="analysis-body">
+                <section class="visual-panel"><div class="section-label">Segmentation</div><div class="image-grid">
+                    <figure class="image-card"><div class="canvas-wrap"><canvas id="original-canvas" role="img" aria-label="Original uploaded leaf"></canvas></div><figcaption>Original image<span class="number">01</span></figcaption></figure>
+                    <figure class="image-card"><div class="canvas-wrap"><canvas id="segmented-canvas" role="img" aria-label="Leaf extracted from background"></canvas></div><figcaption>Leaf segmentation<span class="number">02</span></figcaption></figure>
+                    <figure class="image-card"><div class="canvas-wrap"><canvas id="masks-canvas" role="img" aria-label="Green leaf mask with red disease mask"></canvas></div><figcaption>Leaf & disease masks<span class="number">03</span></figcaption></figure>
+                    <figure class="image-card"><div class="canvas-wrap"><canvas id="disease-canvas" role="img" aria-label="Extracted leaf with translucent red disease overlay"></canvas></div><figcaption>Disease overlay<span class="number">04</span></figcaption></figure>
+                </div><div class="legend"><span><i class="swatch"></i>Leaf area</span><span><i class="swatch disease"></i>Affected area</span></div></section>
+                <aside class="summary"><div class="condition-details"><div class="condition-top"><span class="section-label">Detected condition</span><span class="status-icon" id="condition-icon" role="img" aria-label="Leaf condition"><svg><use href="#icon-check"/></svg></span></div><div class="prediction-text" id="predictionValue"></div><div class="raw-category" id="raw-category"></div><section class="advice-section"><div class="section-label">About this condition</div><div class="advice-text" id="adviceValue"></div></section></div>
+                    <div class="health-panel"><section class="health-card"><div class="health-heading"><span>Leaf health</span><svg aria-hidden="true"><use href="#icon-pulse"/></svg></div><div class="health-value"><strong id="health-value">—</strong><span id="health-unit">%</span></div><div class="health-track" id="health-meter" role="meter" aria-label="Predicted healthy leaf area" aria-valuemin="80" aria-valuemax="100"><span class="health-marker" id="health-marker"></span></div><div class="health-scale"><span>80%</span><span>90%</span><span>100%</span></div><div class="disease-stat"><span>Affected leaf area</span><strong id="disease-value">—</strong></div><p class="health-note" id="health-note">Based on segmented leaf area, not classification confidence.</p></section>
+                    <button class="close-btn" type="button" onclick="closeModal()">Analyze another photo</button></div>
+                </aside>
+            </div>
+        </section>
     </div>
-
     <script>
         let categoryMap = {};
         const fileInput = document.getElementById('hidden-file-input');
+        const uploadButton = document.getElementById('upload-button');
         const statusText = document.getElementById('upload-status-text');
+        const errorText = document.getElementById('upload-error');
         const modal = document.getElementById('resultModal');
         const predictionValue = document.getElementById('predictionValue');
         const adviceValue = document.getElementById('adviceValue');
+        let previousFocus = null;
+        let busy = false;
 
         async function loadDiagnosticDatabase() {
             try {
                 const response = await fetch('/categories_mapped.json');
-                if (!response.ok) throw new Error("Could not fetch map from server.");
-                categoryMap = await response.json();
-            } catch (e) {
-                console.error("Error loading category database:", e);
+                if (response.ok) categoryMap = await response.json();
+            } catch (error) { console.error('Could not load category descriptions:', error); }
+        }
+        const databaseReady = loadDiagnosticDatabase();
+        uploadButton.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', () => { if (fileInput.files[0]) analyzeLeaf(fileInput.files[0]); });
+        ['dragenter', 'dragover'].forEach(event => uploadButton.addEventListener(event, e => { e.preventDefault(); if (!busy) uploadButton.classList.add('dragging'); }));
+        ['dragleave', 'drop'].forEach(event => uploadButton.addEventListener(event, e => { e.preventDefault(); uploadButton.classList.remove('dragging'); }));
+        uploadButton.addEventListener('drop', e => { if (!busy && e.dataTransfer.files[0]) analyzeLeaf(e.dataTransfer.files[0]); });
+
+        async function analyzeLeaf(file) {
+            if (busy) return;
+            if (!['image/jpeg', 'image/png'].includes(file.type)) { errorText.textContent = 'Please choose a JPG or PNG image.'; return; }
+            busy = true;
+            uploadButton.disabled = true;
+            uploadButton.setAttribute('aria-busy', 'true');
+            statusText.textContent = 'Analyzing photo…';
+            errorText.textContent = '';
+            const imageURL = URL.createObjectURL(file);
+            try {
+                const image = new Image();
+                image.src = imageURL;
+                await image.decode();
+                const formData = new FormData();
+                formData.append('file', file);
+                const response = await fetch('/leaffliction/predict', { method: 'POST', body: formData });
+                if (!response.ok) throw new Error(`Analysis failed (server ${response.status}). Please try again.`);
+                const data = await response.json();
+                if (!data.result || !data.result.success) throw new Error('The analysis did not return a result.');
+                await databaseReady;
+                showModal(data.result, image, file.name);
+            } catch (error) {
+                errorText.textContent = error.message || 'Could not analyze this photo. Please try again.';
+            } finally {
+                URL.revokeObjectURL(imageURL);
+                busy = false;
+                uploadButton.disabled = false;
+                uploadButton.removeAttribute('aria-busy');
+                statusText.textContent = 'Upload a leaf photo';
+                fileInput.value = '';
             }
         }
 
-        fileInput.addEventListener('change', async (e) => {
-            if (e.target.files.length === 0) return;
-
-            const file = e.target.files[0];
-            statusText.innerText = "Processing framework data...";
-
-            const formData = new FormData();
-            formData.append('file', file);
-
-            try {
-                const response = await fetch('/leaffliction/predict', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (!response.ok) throw new Error(`Server status: ${response.status}`);
-
-                const data = await response.json();
-                const rawCategory = data.result.category;
-
-                const mappedResult = categoryMap[rawCategory] || {
-                    title: rawCategory,
-                    advice: "Diagnostic received successfully. Monitor leaf irrigation and watch for additional symptoms."
-                };
-
-                showModal(mappedResult.title, mappedResult.advice);
-
-            } catch (error) {
-                alert(`Inference failed: ${error.message}`);
-            } finally {
-                statusText.innerText = "Click to upload photo";
-                fileInput.value = "";
+        function drawAnalysis(image, leafMask, diseaseMask) {
+            const width = image.naturalWidth;
+            const height = image.naturalHeight;
+            for (const mask of [leafMask, diseaseMask]) {
+                if (!Array.isArray(mask) || mask.length !== height || mask.some(row => !Array.isArray(row) || row.length !== width)) {
+                    throw new Error('The segmentation masks do not match the uploaded image.');
+                }
             }
-        });
+            // Keep the preview lightweight; sample full-size masks at the same coordinates.
+            const scale = Math.min(1, 640 / Math.max(width, height));
+            const w = Math.max(1, Math.round(width * scale));
+            const h = Math.max(1, Math.round(height * scale));
+            const original = document.getElementById('original-canvas');
+            original.width = w; original.height = h;
+            const context = original.getContext('2d');
+            context.drawImage(image, 0, 0, w, h);
+            const source = context.getImageData(0, 0, w, h);
+            const extracted = new ImageData(w, h);
+            const combined = new ImageData(w, h);
+            const overlay = new ImageData(w, h);
+            for (let y = 0; y < h; y++) {
+                const row = Math.min(height - 1, Math.floor((y + .5) * height / h));
+                for (let x = 0; x < w; x++) {
+                    const col = Math.min(width - 1, Math.floor((x + .5) * width / w));
+                    const i = (y * w + x) * 4;
+                    const leaf = leafMask[row][col] > 0;
+                    const disease = leaf && diseaseMask[row][col] > 0;
+                    if (!leaf) continue;
+                    for (let channel = 0; channel < 3; channel++) {
+                        extracted.data[i + channel] = source.data[i + channel];
+                        overlay.data[i + channel] = disease ? Math.round(source.data[i + channel] * .55 + [235, 68, 60][channel] * .45) : source.data[i + channel];
+                        combined.data[i + channel] = (disease ? [226, 88, 76] : [92, 169, 109])[channel];
+                    }
+                    extracted.data[i + 3] = combined.data[i + 3] = overlay.data[i + 3] = 255;
+                }
+            }
+            for (const [id, pixels] of [['segmented-canvas', extracted], ['masks-canvas', combined], ['disease-canvas', overlay]]) {
+                const canvas = document.getElementById(id);
+                canvas.width = w; canvas.height = h;
+                canvas.getContext('2d').putImageData(pixels, 0, 0);
+            }
+        }
 
-        function showModal(titleText, adviceText) {
-            predictionValue.innerText = titleText;
-            adviceValue.innerText = adviceText;
+        function showModal(result, image, filename) {
+            drawAnalysis(image, result.leaf_mask, result.disease_mask);
+            const mapped = categoryMap[result.category] || { title: result.category, advice: 'No additional description is available for this condition.' };
+            predictionValue.textContent = mapped.title;
+            adviceValue.textContent = mapped.advice;
+            document.getElementById('raw-category').textContent = result.category;
+            document.getElementById('file-name').textContent = filename;
+            const ratio = result.disease_ratio;
+            const valid = typeof ratio === 'number' && Number.isFinite(ratio) && ratio >= 0 && ratio <= 100;
+            const health = valid ? 100 - ratio : null;
+            const color = !valid ? '#89938a' : health >= 90 ? '#35865a' : health >= 85 ? '#aa8a20' : health >= 80 ? '#c47b26' : '#d75d50';
+            modal.style.setProperty('--severity-color', color);
+            document.getElementById('health-value').textContent = valid ? health.toFixed(1) : '—';
+            document.getElementById('health-unit').hidden = !valid;
+            document.getElementById('disease-value').textContent = valid ? `${ratio.toFixed(1)}%` : '—';
+            document.getElementById('health-marker').hidden = !valid;
+            document.getElementById('health-marker').style.left = valid ? `${Math.max(0, Math.min(100, (health - 80) * 5))}%` : '0%';
+            const meter = document.getElementById('health-meter');
+            if (valid) meter.setAttribute('aria-valuenow', Math.max(80, health).toFixed(1));
+            else meter.removeAttribute('aria-valuenow');
+            meter.setAttribute('aria-valuetext', valid ? `${health.toFixed(1)}% healthy leaf area` : 'No leaf area detected');
+            document.getElementById('health-note').textContent = valid ? 'Based on segmented leaf area, not classification confidence.' : 'No leaf area detected. Try a clearer photo of a single leaf.';
+            const icon = document.getElementById('condition-icon');
+            icon.querySelector('use').setAttribute('href', valid && health >= 90 ? '#icon-check' : '#icon-warning');
+            icon.setAttribute('aria-label', !valid ? 'No leaf area detected' : health >= 90 ? 'Low affected area' : health >= 80 ? 'Moderate affected area' : 'High affected area');
+            previousFocus = document.activeElement;
             modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            modal.querySelector('.icon-button').focus();
         }
 
         function closeModal() {
             modal.classList.remove('active');
+            document.body.style.overflow = '';
+            if (previousFocus && !previousFocus.disabled) previousFocus.focus();
+            else uploadButton.focus();
         }
-
-        loadDiagnosticDatabase();
+        modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+        document.addEventListener('keydown', e => {
+            if (!modal.classList.contains('active')) return;
+            if (e.key === 'Escape') closeModal();
+            if (e.key === 'Tab') {
+                const buttons = modal.querySelectorAll('button');
+                const first = buttons[0], last = buttons[buttons.length - 1];
+                if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+                else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+            }
+        });
     </script>
 </body>
 </html>
