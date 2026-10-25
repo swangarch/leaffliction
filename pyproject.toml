@@ -1,0 +1,20 @@
+[project]
+name = "leaffliction"
+version = "0.1.0"
+description = "leaffliction"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "altair>=5,<6",
+    "fastapi>=0.162.0",
+    "flake8==6.1.0",
+    "ipython==8.20.0",
+    "matplotlib==3.7.3",
+    "numpy<2.0.0",
+    "pillow>=13.0.0",
+    "plantcv<4.9",
+    "python-multipart>=0.0.32",
+    "torch==2.9.0",
+    "torchvision==0.24.0",
+    "uvicorn>=0.54.0",
+]

@@ -27,3 +27,7 @@ leaves copy
 *pth
 
 plantvillage
+
+/.tmp/
+
+.venv
