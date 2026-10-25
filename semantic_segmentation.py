@@ -1,12 +1,14 @@
-import segmentation_models_pytorch as smp
 import torch
-import torch.nn as nn
 import torch.optim as optim
 import argparse
-from pathlib import Path
+import segmentation_models_pytorch as smp
 
-from srcs import prepare_loader, training_segmentation, inference_segmentation, use_device
-
+from srcs import (
+                    prepare_loader,
+                    training_segmentation,
+                    inference_segmentation,
+                    use_device
+                )
 
 
 def parse_arg() -> argparse.Namespace:
@@ -24,18 +26,8 @@ def main():
     if not args.train:
         train_loader, val_loader, test_loader = prepare_loader("leaves_segmentation/", "leaf")
         print("Start infenrence mode")
-        model_leaf = smp.Unet(
-                encoder_name="resnet18",       
-                encoder_weights="imagenet",   
-                in_channels=3,            
-                classes=1,              
-            )
-        model_disease = smp.Unet(
-                encoder_name="resnet18",       
-                encoder_weights="imagenet",   
-                in_channels=3,            
-                classes=1,              
-            )
+        model_leaf = smp.Unet(encoder_name="resnet18", encoder_weights="imagenet", in_channels=3, classes=1)
+        model_disease = smp.Unet(encoder_name="resnet18", encoder_weights="imagenet", in_channels=3, classes=1)
         try:
             model_leaf.load_state_dict(torch.load("weights/weights_leaf.pth", map_location="cpu", weights_only=True))
             model_disease.load_state_dict(torch.load("weights/weights_disease.pth", map_location="cpu", weights_only=True))
@@ -47,18 +39,13 @@ def main():
         for task in ["leaf", "disease"]:
             print(f"Training model for taks: {task}")
             train_loader, val_loader, test_loader = prepare_loader("leaves_segmentation/", task)
-            model = smp.Unet(
-                                encoder_name="resnet18",       
-                                encoder_weights="imagenet",   
-                                in_channels=3,            
-                                classes=1,              
-                            )
-            bce = nn.BCEWithLogitsLoss()
+            model = smp.Unet(encoder_name="resnet18", encoder_weights="imagenet", in_channels=3, classes=1)
             dice = smp.losses.DiceLoss(mode="binary", from_logits=True)
             optimizer = optim.Adam(model.parameters(), lr=0.001)
             device = use_device(model)
             
             training_segmentation(train_loader,
+                                  val_loader,
                                   device,
                                   model, 
                                   optimizer, 

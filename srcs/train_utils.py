@@ -7,6 +7,7 @@ import os
 from torch.utils.data import DataLoader
 from torch.optim import Optimizer
 from typing import List
+from pathlib import Path
 from .model import CNN, RESNET
 from .visualization import show_segmentaion
 
@@ -213,32 +214,51 @@ def load_weights(model: nn.Module, weights_path: str, device: str) -> None:
 
 
 # For segmentation task ==================================================
-def training_segmentation(train_loader: DataLoader, device: str | torch.device,
+def training_segmentation(train_loader: DataLoader, valid_loader: DataLoader, device: str | torch.device,
             model: nn.Module, optimizer: Optimizer, 
-            dice: nn.Module, save_path: str) -> None:
+            loss_func: nn.Module, save_path: str) -> None:
     model = model.to(device)
-    num_batch = len(train_loader)
-    losses = []
+    train_num_samples = len(train_loader)
+    valid_num_samples = len(valid_loader)
+    train_losses = []
+    valid_losses = []
     for epoch in range(10):
-        loss_collect = 0
+        train_loss = 0
+        model.train()
         for image, label in train_loader:
             image = image.to(device)
             label = label.to(device)
-            model.train()
-
             optimizer.zero_grad()
             predict = model(image)
-            loss = dice(predict, label)
-            # loss = bce(predict, label) + dice(predict, label)
-            loss_collect += loss.item()
+            loss = loss_func(predict, label)
+            train_loss += loss.item()
             loss.backward()
             optimizer.step()
-        loss_collect = loss_collect / num_batch
-        losses.append(losses)
-        print(f"Epoch: {epoch} | train loss {loss_collect:.4f}")
+        train_loss = train_loss / train_num_samples
+        train_losses.append(train_loss)
+
+        model.eval()
+        with torch.no_grad():
+            valid_loss = 0
+            for image, label in valid_loader:
+                image = image.to(device)
+                label = label.to(device)
+                predict = model(image)
+                loss = loss_func(predict, label)
+                valid_loss += loss.item()
+        valid_loss = valid_loss / valid_num_samples
+        valid_losses.append(valid_loss)
+
+        print(f"Epoch: {epoch} | train loss {train_loss:.4f} | valid loss {valid_loss:.4f}")
 
     torch.save(model.state_dict(), save_path)
     print(f"Model saved at {save_path}")
+    plt.title(f"{save_path} training curve")
+    plt.plot(train_losses, label="Train loss")
+    plt.plot(valid_losses, label="Valid loss")
+    plt.legend()
+    plt.savefig(f"{Path(save_path).stem}_training_curve.png")
+    plt.close()
 
 
 def inference_segmentation(test_loader: DataLoader, model_leaf: nn.Module, model_disease: nn.Module) -> None:

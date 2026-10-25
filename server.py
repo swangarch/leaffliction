@@ -8,6 +8,8 @@ import numpy as np
 from PIL import Image
 import uvicorn
 import os
+import segmentation_models_pytorch as smp
+import torch
 
 
 def parse_args():
@@ -30,7 +32,14 @@ def setup():
     model = select_model(args.model, num_categories=len(categories))
     device = use_device(model)
     load_weights(model, args.loadweights, device)
-    return args, model, device, categories
+    model_leaf = smp.Unet(encoder_name="resnet18", encoder_weights="imagenet", in_channels=3, classes=1)
+    model_disease = smp.Unet(encoder_name="resnet18", encoder_weights="imagenet", in_channels=3, classes=1)
+    try:
+        model_leaf.load_state_dict(torch.load("weights/weights_leaf.pth", map_location=device, weights_only=True))
+        model_disease.load_state_dict(torch.load("weights/weights_disease.pth", map_location=device, weights_only=True))
+    except FileNotFoundError as e:
+        print(f"Error : {e}")
+    return args, model, model_leaf, model_disease, device, categories
 
 
 app = FastAPI()
@@ -68,11 +77,11 @@ def run_perdiction(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail="Invalid image type")
     img = Image.open(file.file).convert("RGB")
     arr = np.array(img, dtype=np.uint8)
-    res = predict_single_server(arr, model, device, categories)
+    res = predict_single_server(arr, model, model_leaf, model_disease, device, categories)
     print("The prediction is:", res["category"])
     return {"result": res}
 
 
 if __name__ == "__main__":
-    args, model, device, categories = setup()
+    args, model, model_leaf, model_disease, device, categories = setup()
     uvicorn.run(app, host=args.host, port=args.port)
