@@ -95,3 +95,5 @@ def load_categories(path: str = "./categories/categories.json") -> List[str]:
         raise RuntimeError("No categories file, cannot determine catergories.")
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
+
+

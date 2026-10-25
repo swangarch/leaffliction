@@ -1,0 +1,10 @@
+{
+  "images": 7221,
+  "original_copies_identical": true,
+  "binary_masks_valid": true,
+  "disease_masks_within_leaf": true,
+  "changed_masks": 7189,
+  "removed_pixels": 3079981,
+  "added_pixels": 263229,
+  "empty_masks": []
+}

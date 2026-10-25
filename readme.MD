@@ -6,13 +6,14 @@
 The project is structured as a tightly integrated pipeline—each module naturally builds upon the previous one, forming a coherent workflow.
 It leverages libraries such as OpenCV, PlantCV, and PyTorch to create a practical, fully functional solution.
 
-The system consists of five core components:
+The system consists of six core components:
 
 - Dataset distribution analysis
 - Data augmentation and class balancing
 - Image transformations and feature exploration
 - Model training (CNN and ResNet-based CNN)
 - Image prediction (single or batch)
+- Semantic segmentation of leaves and diseased regions
 
 ## Setup
 
@@ -172,7 +173,37 @@ leaves_test/Apple_Black_rot/image (149).JPG,Apple_Black_rot
 
 The model achieves 96–99% accuracy across all 8 classes, demonstrating both reliability and practical usability.
 
-## 6.Serve the model
+## 6.Semantic Segmentation
+
+This module uses **U-Net with a ResNet18 encoder** to generate pixel-level masks for leaves and diseased regions.
+Two models are trained separately, one to extract the leaf from the background, and the other to locate the affected areas.
+
+Each image needs two corresponding masks:
+
+- `image (1)_leaf_mask.png`
+- `image (1)_disease_mask.png`
+
+Images and masks are stored together inside each category folder. Training currently reads from `leaves/`, while inference reads from `leaves_segmentation/`.
+
+To train both models:
+
+```bash
+uv run python semantic_segmentation.py --train
+```
+
+The trained weights are saved as `weights/weights_leaf.pth` and `weights/weights_disease.pth`.
+
+To generate segmentation results using these weights:
+
+```bash
+uv run python semantic_segmentation.py
+```
+
+This module saves the original image, leaf mask, extracted leaf and disease overlays to `output/`. It also calculates the predicted disease area as a percentage of the predicted leaf area.
+
+![Semantic segmentation](./visualize/Semantic_segmentation.png)
+
+## 7.Serve the model
 
 The project provide a API service and a UI to serve the model, with uvicorn and FastAPI
 

@@ -17,4 +17,5 @@ dependencies = [
     "torch==2.9.0",
     "torchvision==0.24.0",
     "uvicorn>=0.54.0",
+    "segmentation-models-pytorch",
 ]
