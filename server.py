@@ -1,6 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from predict import predict_single_server
 from srcs import select_model, use_device, load_weights, load_categories
 import argparse
@@ -52,6 +52,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/")
+def redirect_root():
+    return RedirectResponse(url="/leaffliction", status_code=307)
 
 
 @app.get("/leaffliction")

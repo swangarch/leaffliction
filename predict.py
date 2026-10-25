@@ -109,12 +109,18 @@ def predict_single_server(arr: np.array,
             mask = Image.fromarray(mask).resize(
                 image.size, Image.Resampling.NEAREST)
             masks.append(np.asarray(mask, dtype=np.uint8).tolist())
+    leaf_pixels = np.asarray(masks[0], dtype=np.uint8) > 0
+    disease_pixels = np.asarray(masks[1], dtype=np.uint8) > 0
+    leaf_area = int(np.count_nonzero(leaf_pixels))
+    disease_area = int(np.count_nonzero(leaf_pixels & disease_pixels))
+    disease_ratio = 100.0 * disease_area / leaf_area if leaf_area else None
     return {
         "catID": pred[0],
         "category": categories[pred[0]],
         "success": True,
         "leaf_mask": masks[0],
-        "disease_mask": masks[1]
+        "disease_mask": masks[1],
+        "disease_ratio": disease_ratio
     }
 
 

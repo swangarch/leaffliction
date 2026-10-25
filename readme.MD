@@ -156,7 +156,6 @@ When the provided path points to a single image, the prediction module automatic
 
 ![prediction](./visualize/Prediction1.png)
 ![prediction](./visualize/Prediction2.png)
-![prediction](./visualize/Prediction3.png)
 
 ### Batch prediction example
 
