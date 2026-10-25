@@ -5,7 +5,7 @@ import torch.optim as optim
 import argparse
 from pathlib import Path
 
-from src import prepare_dataset, train, inference
+from srcs import prepare_loader, training_segmentation, inference_segmentation, use_device
 
 
 
@@ -22,7 +22,7 @@ def parse_arg() -> argparse.Namespace:
 def main():
     args = parse_arg()
     if not args.train:
-        train_loader, val_loader, test_loader = prepare_dataset("leaves_segmentation/", "leaf")
+        train_loader, val_loader, test_loader = prepare_loader("leaves_segmentation/", "leaf")
         print("Start infenrence mode")
         model_leaf = smp.Unet(
                 encoder_name="resnet18",       
@@ -41,12 +41,12 @@ def main():
             model_disease.load_state_dict(torch.load("weights/weights_disease.pth", map_location="cpu", weights_only=True))
         except FileNotFoundError as e:
             print(f"Error : {e}")
-        inference(test_loader, model_leaf, model_disease)
+        inference_segmentation(test_loader, model_leaf, model_disease)
 
     else:
         for task in ["leaf", "disease"]:
             print(f"Training model for taks: {task}")
-            train_loader, val_loader, test_loader = prepare_dataset("leaves/", task)
+            train_loader, val_loader, test_loader = prepare_loader("leaves_segmentation/", task)
             model = smp.Unet(
                                 encoder_name="resnet18",       
                                 encoder_weights="imagenet",   
@@ -56,9 +56,14 @@ def main():
             bce = nn.BCEWithLogitsLoss()
             dice = smp.losses.DiceLoss(mode="binary", from_logits=True)
             optimizer = optim.Adam(model.parameters(), lr=0.001)
-            device = "mps"
+            device = use_device(model)
             
-            train(train_loader, device, model, optimizer, dice, f"weights/weights_{task}.pth")
+            training_segmentation(train_loader,
+                                  device,
+                                  model, 
+                                  optimizer, 
+                                  dice, 
+                                  f"weights/weights_{task}.pth")
 
 
 if __name__ == "__main__":

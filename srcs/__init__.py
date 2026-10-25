@@ -3,14 +3,18 @@ from srcs.data_loader import (
                                 batch_test_dataloader,
                                 img_test_dataloader,
                                 img_test_dataloader_from_numpy,
-                                load_categories)
+                                load_categories,
+                                LeafDataset, 
+                                prepare_loader)
 from srcs.train_utils import (
                                 select_model,
                                 use_device,
                                 load_weights,
                                 train_model,
                                 save_model,
-                                test)
+                                test,
+                                training_segmentation, 
+                                inference_segmentation)
 from srcs.image_processing import (
                                     img_detect_leaf,
                                     show_image,
@@ -41,4 +45,7 @@ __all__ = ["select_model", "use_device",
            "analyze_img", "contour_img",
            "extract_pseudolandmarks", "load_img",
            "plot_histogram",
-           "split_dataset"]
+           "split_dataset"
+           "LeafDataset", "prepare_loader",
+           "training_segmentation",
+           "inference_segmentation"]
