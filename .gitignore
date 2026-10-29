@@ -33,3 +33,5 @@ plantvillage
 .venv
 
 output
+
+.DS_Store

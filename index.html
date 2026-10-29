@@ -85,6 +85,79 @@
         button:focus-visible { outline:3px solid #a5d6a7; outline-offset:4px; }
         @media(max-width:850px) { .analysis-body { grid-template-columns:minmax(0,.65fr) minmax(0,.65fr) minmax(250px,1fr); padding:18px; } .condition-details,.health-panel { margin-left:4px; } .file-name { display:none; } .prediction-text { font-size:23px; } }
         @media(max-width:620px) { .hero { padding:30px 24px; } h1 { font-size:2rem; } .credits { font-size:10px; } .modal-overlay { padding:10px; } .modal-window { max-height:calc(100dvh - 20px); border-radius:15px; } .analysis-header { padding:18px; } .analysis-header h2 { font-size:21px; } .analysis-body { display:block; padding:18px; } .visual-panel,.summary { display:block; } .visual-panel > .section-label { margin-bottom:14px; } .image-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; } .image-card:nth-child(n) { grid-column:auto; grid-row:auto; } .legend { margin-top:14px; } .condition-details { margin:24px 0 18px; } .health-panel { margin:0; } figcaption { font-size:10px; padding:10px; } .advice-section { margin-top:18px; } }
+
+        [hidden] { display:none !important; }
+        .batch-sidebar { position:fixed; inset:0 auto 0 0; width:276px; z-index:20; background:linear-gradient(155deg,rgba(227,244,231,.20),rgba(20,53,40,.52)); backdrop-filter:blur(28px) saturate(145%); -webkit-backdrop-filter:blur(28px) saturate(145%); border-right:1px solid #ffffff35; box-shadow:8px 0 40px #071e231f,inset -1px 0 0 #ffffff12; display:flex; flex-direction:column; transition:width .2s; }
+        .sidebar-top { display:flex; align-items:center; gap:12px; padding:24px 14px; }
+        .sidebar-top strong { flex:1; white-space:nowrap; font-size:15px; font-weight:600; letter-spacing:.2px; }
+        .sidebar-toggle { background:#ffffff15; color:white; border:1px solid #ffffff25; border-radius:9px; padding:9px; }
+        .sidebar-content { padding:0 12px; overflow:auto; flex:1; }
+        .batch-upload,.stats-button { width:100%; padding:12px; border-radius:9px; border:1px solid #ffffff35; background:linear-gradient(135deg,#e1f0dc,#bdd9b8); color:#203f2c; box-shadow:0 4px 16px #08251918,inset 0 1px #ffffffb0; font-weight:600; margin-bottom:12px; }
+        .stats-button { background:#ffffff0d; color:white; box-shadow:inset 0 1px #ffffff12; transition:background .2s,border-color .2s; } .stats-button:hover,.stats-button[aria-pressed="true"] { background:#ffffff23; border-color:#ffffff65; } .batch-upload:hover { filter:brightness(1.06); }
+        .queue-summary { font-size:12px; color:#c3d8c7; line-height:1.7; margin:4px 0 16px; }
+        .leaf-list { display:flex; flex-direction:column; gap:8px; padding-bottom:18px; }
+        .leaf-row { position:relative; border:1px solid #ffffff18; border-radius:14px; background:linear-gradient(120deg,#ffffff12,#ffffff06); box-shadow:inset 0 1px #ffffff0b; transition:background .18s,border-color .18s; }
+        .leaf-row:hover { background:#ffffff1c; border-color:#ffffff38; } .leaf-row.selected { border-color:#c4e9bb85; background:linear-gradient(120deg,#d2edc72b,#ffffff12); box-shadow:inset 3px 0 #c4e9bb,0 4px 16px #0000000c; }
+        .leaf-select { display:flex; gap:10px; align-items:center; width:100%; padding:10px 30px 10px 10px; background:none; color:white; border:0; text-align:left; border-radius:10px; }
+        .leaf-select img { width:46px; height:52px; object-fit:cover; border-radius:9px; border:1px solid #ffffff30; box-shadow:0 2px 7px #0002; }
+        .leaf-info { min-width:0; flex:1; }
+        .leaf-info strong { display:block; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:500; }
+        .leaf-info small { display:flex; align-items:center; gap:6px; font-size:11px; color:#c3d8c7; margin-top:7px; }
+        .delete-leaf { position:absolute; right:4px; top:5px; width:26px; height:26px; border:0; background:rgba(22,49,36,.68); backdrop-filter:blur(12px); color:white; border-radius:50%; opacity:0; transition:opacity .15s,background .15s; }
+        .leaf-row:hover .delete-leaf,.leaf-row:focus-within .delete-leaf { opacity:1; }
+        .batch-sidebar.collapsed { width:64px; }
+        .batch-sidebar.collapsed .sidebar-content,.batch-sidebar.collapsed .sidebar-top strong { display:none; }
+        body { padding-left:276px; transition:padding-left .2s; }
+        body.sidebar-collapsed { padding-left:64px; }
+        .modal-overlay { position:static; padding:28px; background:none; backdrop-filter:none; }
+        .modal-window { max-height:none; width:100%; }
+        .shell { min-height:100dvh; }
+        body.has-batch .shell { display:none; }
+        .credits { position:static; margin-top:35px; }
+        .spinner { display:inline-block; width:15px; height:15px; border:2px solid currentColor; border-right-color:transparent; border-radius:50%; animation:spin .8s linear infinite; flex-shrink:0; }
+        @keyframes spin { to { transform:rotate(360deg); } }
+        .pending-view,.statistics { margin:28px; padding:30px; border:1px solid #ffffff40; background:rgba(245,250,242,.96); color:#294234; border-radius:20px; }
+        .pending-view { min-height:65vh; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:18px; text-align:center; }
+        .pending-view img { width:180px; max-height:230px; object-fit:contain; border-radius:12px; }
+        .pending-view .spinner { width:32px; height:32px; color:#35865a; }
+        .pending-view h2 { margin:0; overflow-wrap:anywhere; max-width:100%; }
+        .pending-view p { margin:0; color:#617564; }
+        .retry-button { background:#2e7d32; color:white; padding:12px 22px; border:0; border-radius:8px; }
+        .stats-header { display:flex; justify-content:space-between; gap:15px; align-items:center; }
+        .stats-header h2 { margin:0; }
+        .stats-header button { border:1px solid #29423430; padding:10px 15px; border-radius:8px; background:white; color:#294234; }
+        .stats-note { font-size:13px; color:#617564; line-height:1.7; }
+        .stat-metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:24px 0; }
+        .stat-metric,.chart-card { border:1px solid #29423425; border-radius:12px; padding:20px; background:#ffffffa8; min-width:0; }
+        .stat-metric strong { display:block; font-size:30px; margin-bottom:5px; }
+        .stat-metric span { font-size:12px; color:#617564; }
+        .charts { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+        .chart-card h3 { font-size:16px; margin:0 0 18px; }
+        .chart-card p { font-size:12px; color:#617564; }
+        .pie-chart { width:190px; height:190px; border-radius:50%; margin:20px auto; background:#e5ece2; }
+        .pie-legend { list-style:none; padding:0; margin:0; }
+        .pie-legend li { display:flex; align-items:center; gap:8px; margin:10px 0; font-size:13px; }
+        .pie-legend b { margin-left:auto; }
+        .histogram { display:flex; align-items:stretch; gap:4px; height:210px; margin-top:20px; }
+        .hist-bin { flex:1; min-width:0; display:flex; flex-direction:column; text-align:center; justify-content:flex-end; }
+        .hist-plot { flex:1; display:flex; align-items:flex-end; border-bottom:1px solid #29423440; }
+        .hist-bar { width:100%; background:#6c9b75; border-radius:4px 4px 0 0; position:relative; min-height:0; }
+        .hist-count { position:absolute; bottom:100%; left:0; width:100%; font-size:11px; padding-bottom:4px; }
+        .hist-label { font-size:9px; color:#617564; padding-top:9px; white-space:nowrap; }
+        .species-heading { margin-top:30px; font-size:18px; }
+        @media(hover:none) { .delete-leaf { opacity:1; } }
+        @media(max-width:900px) { .charts { grid-template-columns:1fr; } .stat-metrics { grid-template-columns:repeat(2,1fr); } .analysis-body { display:block; } .visual-panel,.summary { display:block; } .image-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; } .image-card:nth-child(n) { grid-column:auto; grid-row:auto; } .condition-details,.health-panel { margin:20px 0; } .legend { margin-top:15px; } }
+        @media(max-width:620px) { body { padding-left:64px; } .batch-sidebar:not(.collapsed) { box-shadow:10px 0 40px #0008; } .modal-overlay { padding:10px; } .pending-view,.statistics { margin:10px; padding:18px; } .stats-header { align-items:flex-start; flex-direction:column; } .stat-metric { padding:12px; } .hist-label { font-size:8px; } .chart-card { padding:12px; } }
+        .delete-leaf:hover { background:#a44949; }
+        .sidebar-toggle { display:grid; place-items:center; width:36px; height:36px; padding:8px; flex-shrink:0; }
+        .sidebar-toggle svg { width:18px; height:18px; }
+        .sidebar-content { scrollbar-width:thin; scrollbar-color:#ffffff40 transparent; }
+        .queue-summary { padding:8px 2px 14px; margin:4px 0 10px; border-bottom:1px solid #ffffff20; font-size:11px; color:#e0ede2; }
+        .leaf-list { gap:10px; }
+        .chart-subtitle { margin:-8px 0 18px; line-height:1.6; }
+        .pie-legend li { align-items:flex-start; line-height:1.5; }
+        .pie-legend .swatch { flex-shrink:0; margin-top:5px; }
+        .pie-legend b { flex-shrink:0; font-variant-numeric:tabular-nums; }
     </style>
 </head>
 <body>
@@ -97,17 +170,23 @@
         <symbol id="icon-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
         <symbol id="icon-pulse" viewBox="0 0 24 24"><path d="M2 12h5l3-7 4 14 3-7h5"/></symbol>
     </defs></svg>
+    <aside class="batch-sidebar" id="batch-sidebar" aria-label="Leaf batch">
+        <div class="sidebar-top"><button class="sidebar-toggle" id="sidebar-toggle" aria-label="Collapse sidebar" aria-expanded="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16m5-10-2 2 2 2"/></svg></button><strong>Leaf collection</strong></div>
+        <div class="sidebar-content"><button class="batch-upload" id="batch-upload">＋ Upload images</button><button class="stats-button" id="stats-button">◔ Statistics</button><p class="queue-summary" id="queue-summary" role="status" aria-live="polite">Your uploaded leaves will appear here.</p><div class="leaf-list" id="leaf-list"></div></div>
+    </aside>
+    <section class="pending-view" id="pending-view" hidden></section>
+    <section class="statistics" id="statistics" hidden aria-label="Batch statistics"></section>
     <div class="shell">
         <main class="hero">
             <h1>Leaffliction</h1>
             <p class="intro">Upload a leaf photo to identify its condition, view segmentation masks, and measure the affected area.</p>
-            <section class="upload-card"><button type="button" class="upload-box" id="upload-button"><span class="upload-icon"><svg><use href="#icon-leaf"/></svg></span><span class="upload-title" id="upload-status-text" role="status" aria-live="polite">Upload a leaf photo</span><span class="upload-sub">Drop a JPG or PNG here, or click to choose</span></button><input type="file" id="hidden-file-input" accept="image/jpeg,image/png"><p class="error" id="upload-error" role="alert"></p></section>
+            <section class="upload-card"><button type="button" class="upload-box" id="upload-button"><span class="upload-icon"><svg><use href="#icon-leaf"/></svg></span><span class="upload-title" id="upload-status-text" role="status" aria-live="polite">Upload leaf photos</span><span class="upload-sub">Drop JPG or PNG images here, or click to choose multiple</span></button><input type="file" id="hidden-file-input" accept="image/jpeg,image/png" multiple><p class="error" id="upload-error" role="alert"></p></section>
         </main>
         <footer class="credits">Created with ❤️ by Charlotte Xu & Shuai Wang</footer>
     </div>
     <div class="modal-overlay" id="resultModal">
-        <section class="modal-window" role="dialog" aria-modal="true" aria-labelledby="analysis-title" tabindex="-1">
-            <header class="analysis-header"><div><h2 id="analysis-title">Analysis results</h2></div><div class="header-actions"><span class="file-name" id="file-name"></span><button class="icon-button" type="button" aria-label="Close analysis" onclick="closeModal()"><svg><use href="#icon-close"/></svg></button></div></header>
+        <section class="modal-window" role="region" aria-labelledby="analysis-title" tabindex="-1">
+            <header class="analysis-header"><div><h2 id="analysis-title">Analysis results</h2></div><div class="header-actions"><span class="file-name" id="file-name"></span><button class="icon-button" type="button" aria-label="Upload more images" onclick="closeModal()"><svg><use href="#icon-upload"/></svg></button></div></header>
             <div class="analysis-body">
                 <section class="visual-panel"><div class="section-label">Segmentation</div><div class="image-grid">
                     <figure class="image-card"><div class="canvas-wrap"><canvas id="original-canvas" role="img" aria-label="Original uploaded leaf"></canvas></div><figcaption>Original image<span class="number">01</span></figcaption></figure>
@@ -117,7 +196,7 @@
                 </div><div class="legend"><span><i class="swatch"></i>Leaf area</span><span><i class="swatch disease"></i>Affected area</span></div></section>
                 <aside class="summary"><div class="condition-details"><div class="condition-top"><span class="section-label">Detected condition</span><span class="status-icon" id="condition-icon" role="img" aria-label="Leaf condition"><svg><use href="#icon-check"/></svg></span></div><div class="prediction-text" id="predictionValue"></div><div class="raw-category" id="raw-category"></div><section class="advice-section"><div class="section-label">About this condition</div><div class="advice-text" id="adviceValue"></div></section></div>
                     <div class="health-panel"><section class="health-card"><div class="health-heading"><span>Leaf health</span><svg aria-hidden="true"><use href="#icon-pulse"/></svg></div><div class="health-value"><strong id="health-value">—</strong><span id="health-unit">%</span></div><div class="health-track" id="health-meter" role="meter" aria-label="Predicted healthy leaf area" aria-valuemin="80" aria-valuemax="100"><span class="health-marker" id="health-marker"></span></div><div class="health-scale"><span>80%</span><span>90%</span><span>100%</span></div><div class="disease-stat"><span>Affected leaf area</span><strong id="disease-value">—</strong></div><p class="health-note" id="health-note">Based on segmented leaf area, not classification confidence.</p></section>
-                    <button class="close-btn" type="button" onclick="closeModal()">Analyze another photo</button></div>
+                    <button class="close-btn" type="button" onclick="closeModal()">Upload more photos</button></div>
                 </aside>
             </div>
         </section>
@@ -131,9 +210,16 @@
         const modal = document.getElementById('resultModal');
         const predictionValue = document.getElementById('predictionValue');
         const adviceValue = document.getElementById('adviceValue');
-        let previousFocus = null;
-        let busy = false;
-
+        const items = [];
+        let selectedId = null;
+        let currentView = 'analysis';
+        let queueRunning = false;
+        const list = document.getElementById('leaf-list');
+        const pending = document.getElementById('pending-view');
+        const statistics = document.getElementById('statistics');
+        const escapeHTML = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+        const validRatio = result => typeof result.disease_ratio === 'number' && Number.isFinite(result.disease_ratio) && result.disease_ratio >= 0 && result.disease_ratio <= 100;
+        const species = result => String(result.category || 'Unknown').split('___')[0].replace(/_/g, ' ');
         async function loadDiagnosticDatabase() {
             try {
                 const response = await fetch('/categories_mapped.json');
@@ -142,42 +228,127 @@
         }
         const databaseReady = loadDiagnosticDatabase();
         uploadButton.addEventListener('click', () => fileInput.click());
-        fileInput.addEventListener('change', () => { if (fileInput.files[0]) analyzeLeaf(fileInput.files[0]); });
-        ['dragenter', 'dragover'].forEach(event => uploadButton.addEventListener(event, e => { e.preventDefault(); if (!busy) uploadButton.classList.add('dragging'); }));
-        ['dragleave', 'drop'].forEach(event => uploadButton.addEventListener(event, e => { e.preventDefault(); uploadButton.classList.remove('dragging'); }));
-        uploadButton.addEventListener('drop', e => { if (!busy && e.dataTransfer.files[0]) analyzeLeaf(e.dataTransfer.files[0]); });
-
-        async function analyzeLeaf(file) {
-            if (busy) return;
-            if (!['image/jpeg', 'image/png'].includes(file.type)) { errorText.textContent = 'Please choose a JPG or PNG image.'; return; }
-            busy = true;
-            uploadButton.disabled = true;
-            uploadButton.setAttribute('aria-busy', 'true');
-            statusText.textContent = 'Analyzing photo…';
-            errorText.textContent = '';
-            const imageURL = URL.createObjectURL(file);
-            try {
-                const image = new Image();
-                image.src = imageURL;
-                await image.decode();
-                const formData = new FormData();
-                formData.append('file', file);
-                const response = await fetch('/leaffliction/predict', { method: 'POST', body: formData });
-                if (!response.ok) throw new Error(`Analysis failed (server ${response.status}). Please try again.`);
-                const data = await response.json();
-                if (!data.result || !data.result.success) throw new Error('The analysis did not return a result.');
-                await databaseReady;
-                showModal(data.result, image, file.name);
-            } catch (error) {
-                errorText.textContent = error.message || 'Could not analyze this photo. Please try again.';
-            } finally {
-                URL.revokeObjectURL(imageURL);
-                busy = false;
-                uploadButton.disabled = false;
-                uploadButton.removeAttribute('aria-busy');
-                statusText.textContent = 'Upload a leaf photo';
-                fileInput.value = '';
+        document.getElementById('batch-upload').addEventListener('click', () => fileInput.click());
+        document.getElementById('stats-button').addEventListener('click', () => { currentView = 'statistics'; render(); });
+        document.getElementById('sidebar-toggle').addEventListener('click', () => {
+            const collapsed = document.getElementById('batch-sidebar').classList.toggle('collapsed');
+            document.body.classList.toggle('sidebar-collapsed', collapsed);
+            document.getElementById('sidebar-toggle').setAttribute('aria-expanded', String(!collapsed));
+            document.getElementById('sidebar-toggle').setAttribute('aria-label', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
+        });
+        if (matchMedia('(max-width:620px)').matches) document.getElementById('sidebar-toggle').click();
+        fileInput.addEventListener('change', () => { enqueueFiles(fileInput.files); fileInput.value = ''; });
+        for (const target of [uploadButton, document.getElementById('batch-sidebar')]) {
+            ['dragenter', 'dragover'].forEach(event => target.addEventListener(event, e => { e.preventDefault(); target.classList.add('dragging'); }));
+            ['dragleave', 'drop'].forEach(event => target.addEventListener(event, e => { e.preventDefault(); target.classList.remove('dragging'); }));
+            target.addEventListener('drop', e => enqueueFiles(e.dataTransfer.files));
+        }
+        function enqueueFiles(files) {
+            const rejected = [];
+            let first = null;
+            for (const file of Array.from(files)) {
+                if (!['image/jpeg', 'image/png'].includes(file.type)) { rejected.push(file.name); continue; }
+                const item = { id:crypto.randomUUID(), file, url:URL.createObjectURL(file), state:'queued', result:null, image:null, error:'' };
+                items.push(item);
+                first ||= item;
             }
+            errorText.textContent = rejected.length ? `Skipped unsupported files: ${rejected.join(', ')}. Please choose JPG or PNG.` : '';
+            document.getElementById('queue-summary').title = errorText.textContent;
+            if (first) { selectedId = first.id; currentView = 'analysis'; }
+            render();
+            if (rejected.length && items.length) {
+                const notice = document.createElement('p'); notice.className = 'error'; notice.textContent = errorText.textContent;
+                list.prepend(notice);
+            }
+            processQueue();
+        }
+        async function processQueue() {
+            if (queueRunning) return;
+            queueRunning = true;
+            try {
+                let item;
+                while ((item = items.find(entry => entry.state === 'queued'))) {
+                    item.state = 'processing'; render();
+                    try {
+                        const image = new Image(); image.src = item.url; await image.decode();
+                        if (!items.includes(item)) continue;
+                        const body = new FormData(); body.append('file', item.file);
+                        const response = await fetch('/leaffliction/predict', { method:'POST', body });
+                        if (!response.ok) throw new Error(`Analysis failed (server ${response.status}). Please retry.`);
+                        const data = await response.json();
+                        if (!items.includes(item)) continue;
+                        if (!data.result?.success) throw new Error('The analysis did not return a result.');
+                        for (const mask of [data.result.leaf_mask, data.result.disease_mask]) {
+                            if (!Array.isArray(mask) || mask.length !== image.naturalHeight || mask.some(row => !Array.isArray(row) || row.length !== image.naturalWidth)) throw new Error('The segmentation masks do not match the uploaded image.');
+                        }
+                        await databaseReady;
+                        item.result = data.result; item.image = image; item.state = 'done';
+                    } catch (error) { item.state = 'error'; item.error = error.message || 'Could not analyze this photo.'; }
+                    if (items.includes(item)) render();
+                }
+            } finally { queueRunning = false; }
+        }
+        function removeItem(id) {
+            const index = items.findIndex(item => item.id === id);
+            if (index < 0) return;
+            const [item] = items.splice(index, 1); URL.revokeObjectURL(item.url);
+            if (selectedId === id) selectedId = items[Math.min(index, items.length - 1)]?.id || null;
+            render();
+        }
+        list.addEventListener('click', event => {
+            const deletion = event.target.closest('[data-delete]');
+            if (deletion) { removeItem(deletion.dataset.delete); return; }
+            const selection = event.target.closest('[data-select]');
+            if (selection) { selectedId = selection.dataset.select; currentView = 'analysis'; render(); }
+        });
+        function render() {
+            document.body.classList.toggle('has-batch', items.length > 0 || currentView === 'statistics');
+            const counts = state => items.filter(item => item.state === state).length;
+            document.getElementById('queue-summary').textContent = items.length ? `${items.length} images · ${counts('done')} complete · ${counts('queued') + counts('processing')} pending · ${counts('error')} failed` : 'Your uploaded leaves will appear here.';
+            list.innerHTML = items.map(item => `<div class="leaf-row ${item.id === selectedId && currentView === 'analysis' ? 'selected' : ''}"><button class="leaf-select" data-select="${item.id}" aria-pressed="${item.id === selectedId && currentView === 'analysis'}"><img src="${item.url}" alt=""><span class="leaf-info"><strong>${escapeHTML(item.file.name)}</strong><small>${['queued','processing'].includes(item.state) ? '<span class="spinner" aria-hidden="true"></span>' : ''}${item.state === 'done' ? escapeHTML(species(item.result)) + ' · Complete' : item.state === 'error' ? 'Failed · Select to retry' : item.state === 'processing' ? 'Analyzing…' : 'Queued'}</small></span></button><button class="delete-leaf" data-delete="${item.id}" aria-label="Delete ${escapeHTML(item.file.name)}">×</button></div>`).join('');
+            modal.classList.remove('active'); pending.hidden = true; statistics.hidden = true;
+            document.getElementById('stats-button').setAttribute('aria-pressed', String(currentView === 'statistics'));
+            if (currentView === 'statistics') { statistics.hidden = false; renderStatistics(); return; }
+            const item = items.find(entry => entry.id === selectedId);
+            if (!item) return;
+            if (item.state === 'done') { showModal(item.result, item.image, item.file.name); return; }
+            pending.hidden = false;
+            pending.innerHTML = `<img src="${item.url}" alt="Selected leaf"><h2>${escapeHTML(item.file.name)}</h2>${item.state === 'error' ? `<p role="alert">${escapeHTML(item.error)}</p><button class="retry-button" id="retry-button">Retry analysis</button>` : `<span class="spinner" aria-label="Loading"></span><p role="status">${item.state === 'processing' ? 'Analyzing this leaf…' : 'Waiting in queue. Images are analyzed one at a time.'}</p>`}`;
+            document.getElementById('retry-button')?.addEventListener('click', () => { item.state = 'queued'; render(); processQueue(); });
+        }
+        function histogram(results) {
+            const values = results.filter(validRatio).map(result => result.disease_ratio);
+            const bins = Array(10).fill(0);
+            values.forEach(value => bins[Math.min(9, Math.floor(value / 10))]++);
+            const max = Math.max(1, ...bins);
+            return `<p>${values.length} leaves with measurable area${values.length < results.length ? ` · ${results.length - values.length} without a valid ratio excluded` : ''}. X: affected area (%) · Y: leaf count.</p><div class="histogram" role="img" aria-label="${bins.map((count,i) => `${i*10}–${(i+1)*10}%: ${count} leaves`).join('; ')}">${bins.map((count,i) => `<div class="hist-bin"><div class="hist-plot"><div class="hist-bar" style="height:${count/max*85}%"><span class="hist-count">${count}</span></div></div><div class="hist-label">${i*10}–${(i+1)*10}</div></div>`).join('')}</div><p>Intervals include the lower bound; the last includes 100%.</p>`;
+        }
+        function pieChart(entries, total) {
+            const colors = ['#528060','#b5924b','#7a9db0','#a97984','#91aa65','#917caa','#ce8e64','#497c7b'];
+            let angle = 0;
+            const gradient = entries.map(([name, count], i) => {
+                const start = angle; angle += count / total * 360;
+                return `${colors[i % colors.length]} ${start}deg ${angle}deg`;
+            }).join(',');
+            return `<div class="pie-chart" role="img" aria-label="${escapeHTML(entries.map(([name,count]) => `${name}: ${count}`).join('; '))}" style="background:conic-gradient(${gradient})"></div><ul class="pie-legend">${entries.map(([name,count],i) => `<li><i class="swatch" style="background:${colors[i % colors.length]}"></i><span>${escapeHTML(name)}</span><b>${count} · ${(count / total * 100).toFixed(1)}%</b></li>`).join('')}</ul>`;
+        }
+        function conditionEntries(results) {
+            const counts = new Map();
+            results.forEach(result => {
+                const category = String(result.category || 'Unknown');
+                const condition = category.includes('___') ? category.split('___').slice(1).join('___').replace(/_/g, ' ') : category;
+                const label = condition === 'healthy' ? 'Healthy' : condition;
+                counts.set(label, (counts.get(label) || 0) + 1);
+            });
+            return [...counts.entries()].sort((a,b) => b[1] - a[1]);
+        }
+        function renderStatistics() {
+            const results = items.filter(item => item.state === 'done').map(item => item.result);
+            const groups = new Map();
+            results.forEach(result => { const name = species(result); if (!groups.has(name)) groups.set(name, []); groups.get(name).push(result); });
+            const entries = [...groups.entries()].sort((a,b) => b[1].length - a[1].length);
+            statistics.innerHTML = `<header class="stats-header"><h2>Batch statistics</h2><button id="back-analysis">← Leaf analysis</button></header><p class="stats-note">Updates as each leaf finishes. Statistics include completed images currently in this collection. Pending and failed images are excluded.</p><div class="stat-metrics">${[[items.length,'Uploaded leaves'],[results.length,'Completed'],[items.filter(item => ['queued','processing'].includes(item.state)).length,'Pending'],[items.filter(item => item.state === 'error').length,'Failed']].map(([value,label]) => `<div class="stat-metric"><strong>${value}</strong><span>${label}</span></div>`).join('')}</div>${!results.length ? '<p>No completed analyses yet. Upload images or wait for the queue to finish.</p>' : `<div class="charts"><section class="chart-card"><h3>Leaf species & counts</h3>${pieChart(entries.map(([name,values]) => [name,values.length]), results.length)}</section><section class="chart-card"><h3>Affected area · All leaves</h3>${histogram(results)}</section></div><h3 class="species-heading">Conditions within each species</h3><div class="charts">${entries.map(([name,values]) => `<section class="chart-card"><h3>${escapeHTML(name)} · Condition breakdown</h3><p class="chart-subtitle">${values.length} leaves · Classification states within this species</p>${pieChart(conditionEntries(values), values.length)}</section>`).join('')}</div><h3 class="species-heading">Affected area within each species</h3><div class="charts">${entries.map(([name,values]) => `<section class="chart-card"><h3>${escapeHTML(name)} · ${values.length} leaves</h3>${histogram(values)}</section>`).join('')}</div>`}`;
+            document.getElementById('back-analysis').addEventListener('click', () => { currentView = 'analysis'; render(); });
         }
 
         function drawAnalysis(image, leafMask, diseaseMask) {
@@ -248,29 +419,9 @@
             const icon = document.getElementById('condition-icon');
             icon.querySelector('use').setAttribute('href', valid && health >= 90 ? '#icon-check' : '#icon-warning');
             icon.setAttribute('aria-label', !valid ? 'No leaf area detected' : health >= 90 ? 'Low affected area' : health >= 80 ? 'Moderate affected area' : 'High affected area');
-            previousFocus = document.activeElement;
             modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            modal.querySelector('.icon-button').focus();
         }
-
-        function closeModal() {
-            modal.classList.remove('active');
-            document.body.style.overflow = '';
-            if (previousFocus && !previousFocus.disabled) previousFocus.focus();
-            else uploadButton.focus();
-        }
-        modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
-        document.addEventListener('keydown', e => {
-            if (!modal.classList.contains('active')) return;
-            if (e.key === 'Escape') closeModal();
-            if (e.key === 'Tab') {
-                const buttons = modal.querySelectorAll('button');
-                const first = buttons[0], last = buttons[buttons.length - 1];
-                if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-                else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-            }
-        });
+        function closeModal() { fileInput.click(); }
     </script>
 </body>
 </html>
