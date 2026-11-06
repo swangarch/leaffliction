@@ -24,8 +24,6 @@ leaffliction.zip
 
 leaves copy
 
-*pth
-
 plantvillage
 
 /.tmp/
@@ -33,3 +31,5 @@ plantvillage
 .venv
 
 output
+
+.DS_Store
